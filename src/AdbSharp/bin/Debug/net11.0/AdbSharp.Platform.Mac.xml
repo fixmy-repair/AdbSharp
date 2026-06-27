@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Platform.Mac</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Platform.Mac.Usb.MacUsbTransportFactory">
+            <summary>
+            macOS USB provider backed by IOKit discovery.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Platform.Mac.Usb.MacUsbTransportFactory.PlatformName">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Mac.Usb.MacUsbTransportFactory.FindAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Mac.Usb.MacUsbTransportFactory.CanOpen(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Mac.Usb.MacUsbTransportFactory.OpenAsync(AdbSharp.Common.Devices.UsbDeviceDescriptor,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

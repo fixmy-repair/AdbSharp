@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Fastbootd</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Fastbootd.FastbootdCapabilities">
+            <summary>
+            Capability flags discovered from a userspace Fastboot implementation.
+            </summary>
+            <param name="IsUserspace">Indicates whether <c>getvar:is-userspace</c> reports userspace Fastboot.</param>
+            <param name="SupportsDynamicPartitions">Indicates whether dynamic partition metadata is advertised.</param>
+            <param name="SupportsLogicalPartitions">Indicates whether logical partition operations are available.</param>
+            <param name="SupportsSnapshotUpdates">Indicates whether snapshot update status is advertised.</param>
+            <param name="SupportsVirtualAb">Indicates whether Virtual A/B support is inferred from snapshot update support.</param>
+            <param name="SuperPartitionName">The reported super partition name, when available.</param>
+            <param name="SnapshotUpdateStatus">The reported snapshot update status, when available.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdCapabilities.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.String,System.String)">
+            <summary>
+            Capability flags discovered from a userspace Fastboot implementation.
+            </summary>
+            <param name="IsUserspace">Indicates whether <c>getvar:is-userspace</c> reports userspace Fastboot.</param>
+            <param name="SupportsDynamicPartitions">Indicates whether dynamic partition metadata is advertised.</param>
+            <param name="SupportsLogicalPartitions">Indicates whether logical partition operations are available.</param>
+            <param name="SupportsSnapshotUpdates">Indicates whether snapshot update status is advertised.</param>
+            <param name="SupportsVirtualAb">Indicates whether Virtual A/B support is inferred from snapshot update support.</param>
+            <param name="SuperPartitionName">The reported super partition name, when available.</param>
+            <param name="SnapshotUpdateStatus">The reported snapshot update status, when available.</param>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdCapabilities.IsUserspace">
+            <summary>Indicates whether <c>getvar:is-userspace</c> reports userspace Fastboot.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdCapabilities.SupportsDynamicPartitions">
+            <summary>Indicates whether dynamic partition metadata is advertised.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdCapabilities.SupportsLogicalPartitions">
+            <summary>Indicates whether logical partition operations are available.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdCapabilities.SupportsSnapshotUpdates">
+            <summary>Indicates whether snapshot update status is advertised.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdCapabilities.SupportsVirtualAb">
+            <summary>Indicates whether Virtual A/B support is inferred from snapshot update support.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdCapabilities.SuperPartitionName">
+            <summary>The reported super partition name, when available.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdCapabilities.SnapshotUpdateStatus">
+            <summary>The reported snapshot update status, when available.</summary>
+        </member>
+        <member name="T:AdbSharp.Fastbootd.FastbootdClient">
+            <summary>
+            Client for userspace Fastboot operations.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdClient.Device">
+            <summary>
+            Gets the connected userspace Fastboot device.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdClient.Capabilities">
+            <summary>
+            Gets the capabilities discovered from the connected userspace Fastboot implementation.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.ConnectAsync(AdbSharp.Common.Devices.AndroidDevice,AdbSharp.Fastbootd.FastbootdClientOptions,System.Threading.CancellationToken)">
+            <summary>
+            Connects to userspace Fastboot, optionally transitioning from bootloader Fastboot first.
+            </summary>
+            <param name="device">The device to connect.</param>
+            <param name="options">Connection options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The connected userspace Fastboot client.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.DetectCapabilitiesAsync(AdbSharp.Fastboot.FastbootClient,System.Threading.CancellationToken)">
+            <summary>
+            Probes userspace Fastboot capabilities without taking ownership of the client.
+            </summary>
+            <param name="fastboot">The connected Fastboot client.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The discovered userspace Fastboot capabilities.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.FlashLogicalPartitionAsync(System.String,System.IO.Stream,System.Nullable{System.Int64},System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Flashes a logical partition.
+            </summary>
+            <param name="partition">The logical partition name.</param>
+            <param name="image">The image stream.</param>
+            <param name="length">The image length. When omitted, the stream must be seekable.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.FlashSparseLogicalPartitionAsync(System.String,System.IO.Stream,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Flashes a sparse image to a logical partition.
+            </summary>
+            <param name="partition">The logical partition name.</param>
+            <param name="sparseImage">The seekable sparse image stream.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The parsed sparse image metadata.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.CreateLogicalPartitionAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Creates a logical partition.
+            </summary>
+            <param name="name">The partition name.</param>
+            <param name="sizeBytes">The partition size in bytes.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.DeleteLogicalPartitionAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Deletes a logical partition.
+            </summary>
+            <param name="name">The partition name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.ResizeLogicalPartitionAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Resizes a logical partition.
+            </summary>
+            <param name="name">The partition name.</param>
+            <param name="sizeBytes">The requested size in bytes.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.UpdateSuperAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Updates super partition metadata using a previously downloaded image.
+            </summary>
+            <param name="superPartition">The super partition name.</param>
+            <param name="wipe">Whether to wipe existing logical partitions.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.UpdateSuperAsync(System.String,System.IO.Stream,System.Nullable{System.Int64},System.Boolean,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Downloads a super image and updates super partition metadata.
+            </summary>
+            <param name="superPartition">The super partition name.</param>
+            <param name="image">The super image stream.</param>
+            <param name="length">The image length. When omitted, the stream must be seekable.</param>
+            <param name="wipe">Whether to wipe existing logical partitions.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.SnapshotUpdateAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes a snapshot update command when supported by the device.
+            </summary>
+            <param name="operation">The snapshot operation payload.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The terminal OKAY payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.GetVarAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets a Fastboot variable from the userspace device.
+            </summary>
+            <param name="name">The variable name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The variable value.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.FastbootdClient.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Fastbootd.FastbootdClientOptions">
+            <summary>
+            Options used when connecting to a userspace Fastboot device.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdClientOptions.FastbootOptions">
+            <summary>
+            Gets or sets the underlying Fastboot options.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdClientOptions.AllowAutomaticTransition">
+            <summary>
+            Gets or sets whether bootloader Fastboot devices may be rebooted to userspace Fastboot automatically.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdClientOptions.TransitionTimeout">
+            <summary>
+            Gets or sets the timeout used while waiting for a device to reappear in userspace Fastboot.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdClientOptions.RediscoveryPollInterval">
+            <summary>
+            Gets or sets the delay between rediscovery attempts after <c>reboot-fastboot</c>.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.FastbootdClientOptions.RediscoverFastbootdAsync">
+            <summary>
+            Gets or sets an optional rediscovery callback used after <c>reboot-fastboot</c>.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Fastbootd.UnifiedFastbootFlasher">
+            <summary>
+            Provides unified flashing helpers that route operations to bootloader Fastboot or userspace Fastboot.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.UnifiedFastbootFlasher.FlashPartitionAsync(AdbSharp.Common.Devices.AndroidDevice,System.String,System.IO.Stream,System.Nullable{System.Int64},AdbSharp.Fastbootd.FastbootdClientOptions,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Flashes a partition using bootloader Fastboot or userspace Fastboot based on device capability probes.
+            </summary>
+            <param name="device">The Fastboot-capable device.</param>
+            <param name="partition">The partition name.</param>
+            <param name="image">The image stream.</param>
+            <param name="length">The image length. When omitted, the stream must be seekable.</param>
+            <param name="options">Optional Fastbootd transition options.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The unified flash result.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.UnifiedFastbootFlasher.FlashSparsePartitionAsync(AdbSharp.Common.Devices.AndroidDevice,System.String,System.IO.Stream,AdbSharp.Fastbootd.FastbootdClientOptions,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Flashes a sparse image using bootloader Fastboot or userspace Fastboot based on device capability probes.
+            </summary>
+            <param name="device">The Fastboot-capable device.</param>
+            <param name="partition">The partition name.</param>
+            <param name="sparseImage">The seekable sparse image stream.</param>
+            <param name="options">Optional Fastbootd transition options.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The unified flash result.</returns>
+        </member>
+        <member name="T:AdbSharp.Fastbootd.UnifiedFlashResult">
+            <summary>
+            Result returned by a unified Fastboot or Fastbootd flash operation.
+            </summary>
+            <param name="Device">The device used for the terminal flash command.</param>
+            <param name="Partition">The partition that was flashed.</param>
+            <param name="UsedFastbootd">Indicates whether userspace Fastboot handled the flash command.</param>
+            <param name="PartitionWasLogical">Indicates whether the partition was detected as logical.</param>
+            <param name="SparseImage">Sparse image metadata when a sparse image was flashed.</param>
+        </member>
+        <member name="M:AdbSharp.Fastbootd.UnifiedFlashResult.#ctor(AdbSharp.Common.Devices.AndroidDevice,System.String,System.Boolean,System.Boolean,AdbSharp.Fastboot.Sparse.SparseImageInfo)">
+            <summary>
+            Result returned by a unified Fastboot or Fastbootd flash operation.
+            </summary>
+            <param name="Device">The device used for the terminal flash command.</param>
+            <param name="Partition">The partition that was flashed.</param>
+            <param name="UsedFastbootd">Indicates whether userspace Fastboot handled the flash command.</param>
+            <param name="PartitionWasLogical">Indicates whether the partition was detected as logical.</param>
+            <param name="SparseImage">Sparse image metadata when a sparse image was flashed.</param>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.UnifiedFlashResult.Device">
+            <summary>The device used for the terminal flash command.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.UnifiedFlashResult.Partition">
+            <summary>The partition that was flashed.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.UnifiedFlashResult.UsedFastbootd">
+            <summary>Indicates whether userspace Fastboot handled the flash command.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.UnifiedFlashResult.PartitionWasLogical">
+            <summary>Indicates whether the partition was detected as logical.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastbootd.UnifiedFlashResult.SparseImage">
+            <summary>Sparse image metadata when a sparse image was flashed.</summary>
+        </member>
+    </members>
+</doc>

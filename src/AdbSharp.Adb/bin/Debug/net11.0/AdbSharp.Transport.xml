@@ -1,0 +1,384 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Transport</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Transport.Usb.AndroidUsbClass">
+            <summary>
+            Android USB interface classification helpers.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.AndroidUsbClass.VendorSpecificClass">
+            <summary>
+            Android vendor-specific interface class.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.AndroidUsbClass.AndroidSubClass">
+            <summary>
+            Android vendor-specific subclass used by ADB and Fastboot.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.AndroidUsbClass.AdbProtocol">
+            <summary>
+            ADB interface protocol value.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.AndroidUsbClass.FastbootProtocol">
+            <summary>
+            Fastboot interface protocol value.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.AndroidUsbClass.Classify(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <summary>
+            Classifies a USB descriptor into a device mode.
+            </summary>
+            <param name="descriptor">The USB descriptor.</param>
+            <returns>The inferred device mode.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.IUsbDeviceEnumerator">
+            <summary>
+            Enumerates Android-compatible USB interfaces on the current host.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbDeviceEnumerator.FindAsync(System.Threading.CancellationToken)">
+            <summary>
+            Finds USB descriptors that may expose ADB, Fastboot, or Fastbootd.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The discovered descriptors.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.IUsbTransport">
+            <summary>
+            Represents an opened USB bulk transport for Android protocol traffic.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.IUsbTransport.Descriptor">
+            <summary>
+            Gets the device descriptor associated with this transport.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.IUsbTransport.BulkInEndpoint">
+            <summary>
+            Gets the selected bulk input endpoint.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.IUsbTransport.BulkOutEndpoint">
+            <summary>
+            Gets the selected bulk output endpoint.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbTransport.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Reads bytes from the device.
+            </summary>
+            <param name="buffer">The destination buffer.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The number of bytes read.</returns>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbTransport.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Writes bytes to the device.
+            </summary>
+            <param name="buffer">The source buffer.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.IUsbTransportFactory">
+            <summary>
+            Opens USB transports for descriptors produced by a matching enumerator.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.IUsbTransportFactory.PlatformName">
+            <summary>
+            Gets the platform name handled by this factory.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbTransportFactory.CanOpen(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <summary>
+            Determines whether this factory can open the specified descriptor.
+            </summary>
+            <param name="descriptor">The descriptor to inspect.</param>
+            <returns><see langword="true"/> when the descriptor can be opened.</returns>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbTransportFactory.OpenAsync(AdbSharp.Common.Devices.UsbDeviceDescriptor,System.Threading.CancellationToken)">
+            <summary>
+            Opens the selected USB transport.
+            </summary>
+            <param name="descriptor">The descriptor to open.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>An opened USB transport.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDiscoveryIssue">
+            <summary>
+            Describes a USB discovery issue reported by one registered enumerator.
+            </summary>
+            <param name="EnumeratorName">The enumerator type name.</param>
+            <param name="Error">The platform-neutral USB error classification.</param>
+            <param name="Message">The diagnostic message.</param>
+            <param name="Exception">The exception raised by the enumerator, when available.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDiscoveryIssue.#ctor(System.String,AdbSharp.Transport.Usb.UsbTransportError,System.String,System.Exception)">
+            <summary>
+            Describes a USB discovery issue reported by one registered enumerator.
+            </summary>
+            <param name="EnumeratorName">The enumerator type name.</param>
+            <param name="Error">The platform-neutral USB error classification.</param>
+            <param name="Message">The diagnostic message.</param>
+            <param name="Exception">The exception raised by the enumerator, when available.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDiscoveryIssue.EnumeratorName">
+            <summary>The enumerator type name.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDiscoveryIssue.Error">
+            <summary>The platform-neutral USB error classification.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDiscoveryIssue.Message">
+            <summary>The diagnostic message.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDiscoveryIssue.Exception">
+            <summary>The exception raised by the enumerator, when available.</summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDiscoveryResult">
+            <summary>
+            Contains USB descriptors and non-fatal discovery issues from all registered enumerators.
+            </summary>
+            <param name="Devices">The descriptors returned by successful enumerators.</param>
+            <param name="Issues">The discovery issues returned by failed enumerators.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDiscoveryResult.#ctor(System.Collections.Generic.IReadOnlyList{AdbSharp.Common.Devices.UsbDeviceDescriptor},System.Collections.Generic.IReadOnlyList{AdbSharp.Transport.Usb.UsbDiscoveryIssue})">
+            <summary>
+            Contains USB descriptors and non-fatal discovery issues from all registered enumerators.
+            </summary>
+            <param name="Devices">The descriptors returned by successful enumerators.</param>
+            <param name="Issues">The discovery issues returned by failed enumerators.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDiscoveryResult.Devices">
+            <summary>The descriptors returned by successful enumerators.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDiscoveryResult.Issues">
+            <summary>The discovery issues returned by failed enumerators.</summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbEndpointDirection">
+            <summary>
+            USB endpoint direction.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbEndpointDirection.Out">
+            <summary>
+            Data flows from host to device.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbEndpointDirection.In">
+            <summary>
+            Data flows from device to host.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbTransferKind">
+            <summary>
+            USB endpoint transfer kind.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransferKind.Bulk">
+            <summary>
+            Bulk endpoint transfer.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbEndpoint">
+            <summary>
+            Describes a USB endpoint selected for Android protocol traffic.
+            </summary>
+            <param name="Address">The endpoint address.</param>
+            <param name="Direction">The endpoint direction.</param>
+            <param name="TransferKind">The endpoint transfer kind.</param>
+            <param name="MaxPacketSize">The endpoint max packet size.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbEndpoint.#ctor(System.Byte,AdbSharp.Transport.Usb.UsbEndpointDirection,AdbSharp.Transport.Usb.UsbTransferKind,System.UInt16)">
+            <summary>
+            Describes a USB endpoint selected for Android protocol traffic.
+            </summary>
+            <param name="Address">The endpoint address.</param>
+            <param name="Direction">The endpoint direction.</param>
+            <param name="TransferKind">The endpoint transfer kind.</param>
+            <param name="MaxPacketSize">The endpoint max packet size.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbEndpoint.Address">
+            <summary>The endpoint address.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbEndpoint.Direction">
+            <summary>The endpoint direction.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbEndpoint.TransferKind">
+            <summary>The endpoint transfer kind.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbEndpoint.MaxPacketSize">
+            <summary>The endpoint max packet size.</summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbTransportError">
+            <summary>
+            Classifies USB transport failures in a platform-neutral way.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.Unknown">
+            <summary>
+            The failure could not be classified.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.PermissionDenied">
+            <summary>
+            The host process does not have permission to access the USB interface.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.DeviceNotFound">
+            <summary>
+            The selected USB device or interface was not found.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.DeviceDisconnected">
+            <summary>
+            The device disconnected while an operation was in progress.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.EndpointStalled">
+            <summary>
+            The USB endpoint stalled.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.Timeout">
+            <summary>
+            The native USB operation timed out.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.Busy">
+            <summary>
+            The device or interface is busy.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.ExclusiveAccess">
+            <summary>
+            Another process has exclusive access to the device or interface.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.OperationAborted">
+            <summary>
+            The operation was aborted by the operating system or driver.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.Io">
+            <summary>
+            The native USB operation failed with a general I/O error.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.InvalidEndpoint">
+            <summary>
+            The transport reported endpoint metadata that cannot support Android bulk protocol traffic.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbTransportError.PlatformDependencyMissing">
+            <summary>
+            A required platform USB dependency is missing.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbTransportException">
+            <summary>
+            Represents a USB transport failure.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Transport.Usb.UsbTransportException"/> class.
+            </summary>
+            <param name="message">The failure message.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Transport.Usb.UsbTransportException"/> class.
+            </summary>
+            <param name="message">The failure message.</param>
+            <param name="innerException">The underlying failure.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportException.#ctor(AdbSharp.Transport.Usb.UsbTransportError,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Transport.Usb.UsbTransportException"/> class.
+            </summary>
+            <param name="error">The platform-neutral USB error classification.</param>
+            <param name="message">The failure message.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportException.#ctor(AdbSharp.Transport.Usb.UsbTransportError,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Transport.Usb.UsbTransportException"/> class.
+            </summary>
+            <param name="error">The platform-neutral USB error classification.</param>
+            <param name="message">The failure message.</param>
+            <param name="innerException">The underlying failure.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportException.Error">
+            <summary>
+            Gets the platform-neutral USB error classification.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbTransportRegistry">
+            <summary>
+            Process-wide registry for USB enumerators and transport factories.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportRegistry.RegisterEnumerator(AdbSharp.Transport.Usb.IUsbDeviceEnumerator)">
+            <summary>
+            Registers a USB device enumerator.
+            </summary>
+            <param name="enumerator">The enumerator to register.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportRegistry.RegisterFactory(AdbSharp.Transport.Usb.IUsbTransportFactory)">
+            <summary>
+            Registers a USB transport factory.
+            </summary>
+            <param name="factory">The factory to register.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportRegistry.Clear">
+            <summary>
+            Clears registered transports. Intended for tests and custom hosts.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportRegistry.FindAsync(System.Threading.CancellationToken)">
+            <summary>
+            Enumerates registered USB device descriptors.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The descriptors returned by all registered enumerators.</returns>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportRegistry.FindWithDiagnosticsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Enumerates registered USB device descriptors and captures per-enumerator failures as diagnostics.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>Successful descriptors and discovery issues from failed enumerators.</returns>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportRegistry.FindFactory(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <summary>
+            Finds a registered factory for the descriptor.
+            </summary>
+            <param name="descriptor">The descriptor to open.</param>
+            <returns>A matching factory.</returns>
+            <exception cref="T:AdbSharp.Transport.Usb.UsbTransportException">No registered factory can open the descriptor.</exception>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbTransportValidator">
+            <summary>
+            Validates USB transport metadata before protocol clients use a transport.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportValidator.ValidateOpenedTransport(AdbSharp.Transport.Usb.IUsbTransport)">
+            <summary>
+            Validates the metadata exposed by an opened Android USB transport.
+            </summary>
+            <param name="transport">The opened transport.</param>
+            <exception cref="T:AdbSharp.Transport.Usb.UsbTransportException">The transport does not expose a valid bulk IN/OUT endpoint pair.</exception>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportValidator.ValidateEndpointPair(AdbSharp.Transport.Usb.UsbEndpoint,AdbSharp.Transport.Usb.UsbEndpoint)">
+            <summary>
+            Validates that two endpoints form an Android-compatible bulk IN/OUT pair.
+            </summary>
+            <param name="bulkIn">The bulk IN endpoint.</param>
+            <param name="bulkOut">The bulk OUT endpoint.</param>
+            <exception cref="T:AdbSharp.Transport.Usb.UsbTransportException">The endpoints do not form a valid Android bulk pair.</exception>
+        </member>
+    </members>
+</doc>

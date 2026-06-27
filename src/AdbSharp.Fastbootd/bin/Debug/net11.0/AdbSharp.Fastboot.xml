@@ -1,0 +1,500 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Fastboot</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Fastboot.FastbootClient">
+            <summary>
+            Client for the bootloader Fastboot protocol.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.FastbootClient.Device">
+            <summary>
+            Gets the connected device.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.ConnectAsync(AdbSharp.Common.Devices.AndroidDevice,AdbSharp.Fastboot.FastbootClientOptions,System.Threading.CancellationToken)">
+            <summary>
+            Connects to a Fastboot-capable device.
+            </summary>
+            <param name="device">The device to connect.</param>
+            <param name="options">Connection options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The connected client.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.ExecuteCommandAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes a raw Fastboot command.
+            </summary>
+            <param name="command">The command text.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The terminal OKAY payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.GetVarAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Reads a Fastboot variable.
+            </summary>
+            <param name="name">The variable name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The variable value.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.GetUInt64VarAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Reads a Fastboot variable as an unsigned 64-bit integer.
+            </summary>
+            <param name="name">The variable name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The parsed variable value.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.GetMaxDownloadSizeAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reads the maximum Fastboot download size reported by the device.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The max download size in bytes.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.GetMaxFetchSizeAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reads the maximum Fastboot fetch size reported by the device.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The max fetch size in bytes.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.GetPartitionSizeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Reads the partition size reported by the device.
+            </summary>
+            <param name="partition">The partition name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The partition size in bytes.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.IsLogicalPartitionAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Reads whether a partition is logical according to the device.
+            </summary>
+            <param name="partition">The partition name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns><see langword="true" /> when the partition is logical.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.IsUserspaceAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reads whether the connected Fastboot implementation is userspace Fastboot.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns><see langword="true" /> when the device reports userspace Fastboot.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.DownloadAsync(System.IO.Stream,System.Int64,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Downloads data to the device staging buffer.
+            </summary>
+            <param name="source">The source stream.</param>
+            <param name="length">The number of bytes to send.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FlashPartitionAsync(System.String,System.IO.Stream,System.Nullable{System.Int64},System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Downloads and flashes an image to a partition.
+            </summary>
+            <param name="partition">The partition name.</param>
+            <param name="image">The image stream.</param>
+            <param name="length">The image length. When omitted, the stream must be seekable.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FlashSparsePartitionAsync(System.String,System.IO.Stream,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Validates, downloads, and flashes an Android sparse image.
+            </summary>
+            <param name="partition">The partition name.</param>
+            <param name="sparseImage">The sparse image stream. The stream must be seekable.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The parsed sparse image metadata.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.EraseAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Erases a partition.
+            </summary>
+            <param name="partition">The partition name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.BootAsync(System.Threading.CancellationToken)">
+            <summary>
+            Boots the previously downloaded boot image.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.ContinueAsync(System.Threading.CancellationToken)">
+            <summary>
+            Continues normal boot.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.RebootAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reboots the device.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.RebootBootloaderAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reboots to bootloader.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.RebootFastbootAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reboots to userspace Fastboot.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.OemAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes an OEM command.
+            </summary>
+            <param name="command">The OEM command payload.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The terminal OKAY payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FlashingUnlockAsync(System.Threading.CancellationToken)">
+            <summary>
+            Sends a flashing unlock command.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FlashingLockAsync(System.Threading.CancellationToken)">
+            <summary>
+            Sends a flashing lock command.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FlashingUnlockCriticalAsync(System.Threading.CancellationToken)">
+            <summary>
+            Sends a critical flashing unlock command.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FlashingLockCriticalAsync(System.Threading.CancellationToken)">
+            <summary>
+            Sends a critical flashing lock command.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.UploadAsync(System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Uploads data staged by the previous Fastboot command.
+            </summary>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The uploaded bytes.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.UploadAsync(System.IO.Stream,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Uploads data staged by the previous Fastboot command to a destination stream.
+            </summary>
+            <param name="destination">The destination stream.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FetchAsync(System.String,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Fetches a named artifact when supported by the device.
+            </summary>
+            <param name="artifact">The artifact name.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The fetched bytes.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FetchAsync(System.String,System.IO.Stream,System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Fetches a named artifact to a destination stream when supported by the device.
+            </summary>
+            <param name="artifact">The artifact name.</param>
+            <param name="destination">The destination stream.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.FetchPartitionAsync(System.String,System.IO.Stream,System.Nullable{System.Int64},System.Nullable{System.Int64},System.IProgress{AdbSharp.Common.Diagnostics.TransferProgress},System.Threading.CancellationToken)">
+            <summary>
+            Fetches a partition range to a destination stream when supported by the device.
+            </summary>
+            <param name="partition">The partition name.</param>
+            <param name="destination">The destination stream.</param>
+            <param name="offset">Optional partition offset.</param>
+            <param name="length">Optional number of bytes to fetch.</param>
+            <param name="progress">Optional transfer progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.CreateLogicalPartitionAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Creates a logical partition when supported by the connected Fastboot implementation.
+            </summary>
+            <param name="name">The partition name.</param>
+            <param name="sizeBytes">The requested size in bytes.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.DeleteLogicalPartitionAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Deletes a logical partition when supported by the connected Fastboot implementation.
+            </summary>
+            <param name="name">The partition name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.ResizeLogicalPartitionAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Resizes a logical partition when supported by the connected Fastboot implementation.
+            </summary>
+            <param name="name">The partition name.</param>
+            <param name="sizeBytes">The requested size in bytes.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.UpdateSuperAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Updates super partition metadata using a previously downloaded image.
+            </summary>
+            <param name="superPartition">The super partition name.</param>
+            <param name="wipe">Whether to wipe existing logical partitions.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.SnapshotUpdateAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes a snapshot update operation.
+            </summary>
+            <param name="operation">The snapshot operation, such as <c>cancel</c> or <c>merge</c>.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The terminal OKAY payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootClient.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Fastboot.FastbootClientOptions">
+            <summary>
+            Options used when connecting to a Fastboot device.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.FastbootClientOptions.TransportFactory">
+            <summary>
+            Gets or sets the USB transport factory. When omitted, the global transport registry is used.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.FastbootClientOptions.ChunkSize">
+            <summary>
+            Gets or sets the transfer chunk size used for data phases.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.FastbootClientOptions.InfoProgress">
+            <summary>
+            Gets or sets a progress sink for bootloader informational text.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Fastboot.FastbootCommandException">
+            <summary>
+            Represents a failed Fastboot command.
+            </summary>
+            <param name="command">The command that failed.</param>
+            <param name="message">The bootloader failure message.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.FastbootCommandException.#ctor(System.String,System.String)">
+            <summary>
+            Represents a failed Fastboot command.
+            </summary>
+            <param name="command">The command that failed.</param>
+            <param name="message">The bootloader failure message.</param>
+        </member>
+        <member name="P:AdbSharp.Fastboot.FastbootCommandException.Command">
+            <summary>
+            Gets the command that failed.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.FastbootCommandException.BootloaderMessage">
+            <summary>
+            Gets the bootloader failure message.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Fastboot.Sparse.SparseChunkHeader">
+            <summary>
+            Parsed Android sparse chunk header.
+            </summary>
+            <param name="Kind">The chunk kind.</param>
+            <param name="BlockCount">The output block count.</param>
+            <param name="TotalSize">The total encoded chunk size.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseChunkHeader.#ctor(AdbSharp.Fastboot.Sparse.SparseChunkKind,System.UInt32,System.UInt32)">
+            <summary>
+            Parsed Android sparse chunk header.
+            </summary>
+            <param name="Kind">The chunk kind.</param>
+            <param name="BlockCount">The output block count.</param>
+            <param name="TotalSize">The total encoded chunk size.</param>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseChunkHeader.Kind">
+            <summary>The chunk kind.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseChunkHeader.BlockCount">
+            <summary>The output block count.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseChunkHeader.TotalSize">
+            <summary>The total encoded chunk size.</summary>
+        </member>
+        <member name="T:AdbSharp.Fastboot.Sparse.SparseChunkKind">
+            <summary>
+            Android sparse image chunk kind.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Fastboot.Sparse.SparseChunkKind.Raw">
+            <summary>
+            Raw data chunk.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Fastboot.Sparse.SparseChunkKind.Fill">
+            <summary>
+            Fill pattern chunk.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Fastboot.Sparse.SparseChunkKind.DontCare">
+            <summary>
+            Empty skip chunk.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Fastboot.Sparse.SparseChunkKind.Crc32">
+            <summary>
+            CRC chunk.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Fastboot.Sparse.SparseImageChunk">
+            <summary>
+            Describes one Android sparse image chunk.
+            </summary>
+            <param name="Kind">The chunk kind.</param>
+            <param name="BlockCount">The number of output blocks represented by the chunk.</param>
+            <param name="EncodedDataLength">The encoded payload length after the chunk header.</param>
+            <param name="OutputLength">The expanded output length in bytes.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseImageChunk.#ctor(AdbSharp.Fastboot.Sparse.SparseChunkKind,System.UInt32,System.UInt64,System.UInt64)">
+            <summary>
+            Describes one Android sparse image chunk.
+            </summary>
+            <param name="Kind">The chunk kind.</param>
+            <param name="BlockCount">The number of output blocks represented by the chunk.</param>
+            <param name="EncodedDataLength">The encoded payload length after the chunk header.</param>
+            <param name="OutputLength">The expanded output length in bytes.</param>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageChunk.Kind">
+            <summary>The chunk kind.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageChunk.BlockCount">
+            <summary>The number of output blocks represented by the chunk.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageChunk.EncodedDataLength">
+            <summary>The encoded payload length after the chunk header.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageChunk.OutputLength">
+            <summary>The expanded output length in bytes.</summary>
+        </member>
+        <member name="T:AdbSharp.Fastboot.Sparse.SparseImageHeader">
+            <summary>
+            Parsed Android sparse image header.
+            </summary>
+            <param name="BlockSize">The sparse block size.</param>
+            <param name="TotalBlocks">The expanded block count.</param>
+            <param name="TotalChunks">The number of chunks.</param>
+            <param name="ImageChecksum">The image checksum when present.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseImageHeader.#ctor(System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            Parsed Android sparse image header.
+            </summary>
+            <param name="BlockSize">The sparse block size.</param>
+            <param name="TotalBlocks">The expanded block count.</param>
+            <param name="TotalChunks">The number of chunks.</param>
+            <param name="ImageChecksum">The image checksum when present.</param>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageHeader.BlockSize">
+            <summary>The sparse block size.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageHeader.TotalBlocks">
+            <summary>The expanded block count.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageHeader.TotalChunks">
+            <summary>The number of chunks.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageHeader.ImageChecksum">
+            <summary>The image checksum when present.</summary>
+        </member>
+        <member name="T:AdbSharp.Fastboot.Sparse.SparseImageInfo">
+            <summary>
+            Describes a validated Android sparse image.
+            </summary>
+            <param name="Header">The parsed sparse image header.</param>
+            <param name="Chunks">The validated sparse chunks.</param>
+            <param name="EncodedLength">The sparse image byte length.</param>
+            <param name="ExpandedLength">The expanded raw image byte length.</param>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseImageInfo.#ctor(AdbSharp.Fastboot.Sparse.SparseImageHeader,System.Collections.Generic.IReadOnlyList{AdbSharp.Fastboot.Sparse.SparseImageChunk},System.UInt64,System.UInt64)">
+            <summary>
+            Describes a validated Android sparse image.
+            </summary>
+            <param name="Header">The parsed sparse image header.</param>
+            <param name="Chunks">The validated sparse chunks.</param>
+            <param name="EncodedLength">The sparse image byte length.</param>
+            <param name="ExpandedLength">The expanded raw image byte length.</param>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageInfo.Header">
+            <summary>The parsed sparse image header.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageInfo.Chunks">
+            <summary>The validated sparse chunks.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageInfo.EncodedLength">
+            <summary>The sparse image byte length.</summary>
+        </member>
+        <member name="P:AdbSharp.Fastboot.Sparse.SparseImageInfo.ExpandedLength">
+            <summary>The expanded raw image byte length.</summary>
+        </member>
+        <member name="T:AdbSharp.Fastboot.Sparse.SparseImageReader">
+            <summary>
+            Reads Android sparse image metadata.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Fastboot.Sparse.SparseImageReader.Magic">
+            <summary>
+            Android sparse image magic value.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseImageReader.ReadHeaderAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Reads a sparse image header.
+            </summary>
+            <param name="source">The stream positioned at the sparse header.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The parsed sparse image header.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseImageReader.ReadChunkHeaderAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Reads a sparse chunk header.
+            </summary>
+            <param name="source">The stream positioned at a chunk header.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The parsed chunk header.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseImageReader.ReadChunkHeaderAsync(System.IO.Stream,System.UInt16,System.Threading.CancellationToken)">
+            <summary>
+            Reads a sparse chunk header.
+            </summary>
+            <param name="source">The stream positioned at a chunk header.</param>
+            <param name="chunkHeaderSize">The chunk header size reported by the sparse image header.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The parsed chunk header.</returns>
+        </member>
+        <member name="M:AdbSharp.Fastboot.Sparse.SparseImageReader.ReadInfoAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Reads and validates an Android sparse image from the current stream position.
+            </summary>
+            <param name="source">The sparse image stream.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The validated sparse image metadata.</returns>
+        </member>
+    </members>
+</doc>

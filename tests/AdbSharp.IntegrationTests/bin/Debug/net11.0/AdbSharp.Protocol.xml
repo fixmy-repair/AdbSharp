@@ -1,0 +1,381 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Protocol</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Protocol.Adb.AdbAuthKind">
+            <summary>
+            ADB authentication packet kinds.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbAuthKind.Token">
+            <summary>
+            The device is sending a token for the host to sign.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbAuthKind.Signature">
+            <summary>
+            The host is sending a signature for the token.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbAuthKind.PublicKey">
+            <summary>
+            The host is sending its public key.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Protocol.Adb.AdbCommand">
+            <summary>
+            ADB packet command identifiers.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.Sync">
+            <summary>
+            Synchronization command used by older protocol revisions.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.Connect">
+            <summary>
+            Connection negotiation command.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.Open">
+            <summary>
+            Opens a logical ADB stream.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.Okay">
+            <summary>
+            Acknowledges a stream or write operation.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.Close">
+            <summary>
+            Closes a logical ADB stream.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.Write">
+            <summary>
+            Writes stream payload bytes.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.Auth">
+            <summary>
+            Carries an authentication token, signature, or public key.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbCommand.StartTls">
+            <summary>
+            Starts stream-based TLS when both peers support it.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Protocol.Adb.AdbConstants">
+            <summary>
+            ADB protocol constants.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.HeaderLength">
+            <summary>
+            Size of an ADB packet header in bytes.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.MaxPayloadV1">
+            <summary>
+            Original protocol payload maximum.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.MaxPayload">
+            <summary>
+            Current protocol payload maximum.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.VersionMin">
+            <summary>
+            Minimum ADB protocol version.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.Version">
+            <summary>
+            Current ADB protocol version.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.StartTlsVersionMin">
+            <summary>
+            Minimum stream TLS version.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.StartTlsVersion">
+            <summary>
+            Current stream TLS version.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Protocol.Adb.AdbPacket">
+            <summary>
+            Complete ADB packet with header and payload.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacket.#ctor(AdbSharp.Protocol.Adb.AdbPacketHeader,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Protocol.Adb.AdbPacket"/> class.
+            </summary>
+            <param name="header">The packet header.</param>
+            <param name="payload">The packet payload.</param>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacket.Header">
+            <summary>
+            Gets the packet header.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacket.Payload">
+            <summary>
+            Gets the packet payload.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacket.Create(AdbSharp.Protocol.Adb.AdbCommand,System.UInt32,System.UInt32,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Creates a packet with a generated header.
+            </summary>
+            <param name="command">The command.</param>
+            <param name="arg0">The first command argument.</param>
+            <param name="arg1">The second command argument.</param>
+            <param name="payload">The payload.</param>
+            <returns>The packet.</returns>
+        </member>
+        <member name="T:AdbSharp.Protocol.Adb.AdbPacketCodec">
+            <summary>
+            Encodes and decodes ADB packets.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.ComputeMagic(AdbSharp.Protocol.Adb.AdbCommand)">
+            <summary>
+            Computes the ADB command magic value.
+            </summary>
+            <param name="command">The command.</param>
+            <returns>The command magic value.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.ComputeChecksum(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Computes the ADB payload checksum.
+            </summary>
+            <param name="payload">The payload bytes.</param>
+            <returns>The unsigned byte-sum checksum.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.GetEncodedLength(AdbSharp.Protocol.Adb.AdbPacket)">
+            <summary>
+            Gets the encoded packet length.
+            </summary>
+            <param name="packet">The packet.</param>
+            <returns>The encoded byte length.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.Write(AdbSharp.Protocol.Adb.AdbPacket,System.Span{System.Byte})">
+            <summary>
+            Writes a packet to a caller-provided buffer.
+            </summary>
+            <param name="packet">The packet to write.</param>
+            <param name="destination">The destination buffer.</param>
+            <returns>The number of bytes written.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.Read(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads a complete packet from a contiguous buffer.
+            </summary>
+            <param name="source">The encoded packet bytes.</param>
+            <returns>The decoded packet.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.WriteUInt32LittleEndian(System.Span{System.Byte},System.UInt32)">
+            <summary>
+            Writes a 32-bit little-endian integer for service-level protocols.
+            </summary>
+            <param name="destination">The destination buffer.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="T:AdbSharp.Protocol.Adb.AdbPacketHeader">
+            <summary>
+            ADB packet header.
+            </summary>
+            <param name="Command">The packet command.</param>
+            <param name="Arg0">The first command argument.</param>
+            <param name="Arg1">The second command argument.</param>
+            <param name="PayloadLength">The payload length in bytes.</param>
+            <param name="PayloadChecksum">The unsigned byte-sum payload checksum.</param>
+            <param name="Magic">The command magic value.</param>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketHeader.#ctor(AdbSharp.Protocol.Adb.AdbCommand,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            ADB packet header.
+            </summary>
+            <param name="Command">The packet command.</param>
+            <param name="Arg0">The first command argument.</param>
+            <param name="Arg1">The second command argument.</param>
+            <param name="PayloadLength">The payload length in bytes.</param>
+            <param name="PayloadChecksum">The unsigned byte-sum payload checksum.</param>
+            <param name="Magic">The command magic value.</param>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacketHeader.Command">
+            <summary>The packet command.</summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacketHeader.Arg0">
+            <summary>The first command argument.</summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacketHeader.Arg1">
+            <summary>The second command argument.</summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacketHeader.PayloadLength">
+            <summary>The payload length in bytes.</summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacketHeader.PayloadChecksum">
+            <summary>The unsigned byte-sum payload checksum.</summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Adb.AdbPacketHeader.Magic">
+            <summary>The command magic value.</summary>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketHeader.Create(AdbSharp.Protocol.Adb.AdbCommand,System.UInt32,System.UInt32,System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Creates a validated header for a command and payload.
+            </summary>
+            <param name="command">The packet command.</param>
+            <param name="arg0">The first command argument.</param>
+            <param name="arg1">The second command argument.</param>
+            <param name="payload">The packet payload.</param>
+            <returns>A packet header.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketHeader.Write(System.Span{System.Byte})">
+            <summary>
+            Writes the header using ADB little-endian wire format.
+            </summary>
+            <param name="destination">The destination buffer.</param>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketHeader.Read(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads and validates the fixed header fields.
+            </summary>
+            <param name="source">The source buffer.</param>
+            <returns>The parsed header.</returns>
+        </member>
+        <member name="T:AdbSharp.Protocol.Adb.AdbServiceEncoding">
+            <summary>
+            Encodes ADB service strings and host request prefixes.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbServiceEncoding.EncodeOpenPayload(System.String)">
+            <summary>
+            Encodes a stream service string as a null-terminated UTF-8 payload.
+            </summary>
+            <param name="service">The service string.</param>
+            <returns>The encoded payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbServiceEncoding.EncodeLengthPrefixedRequest(System.String)">
+            <summary>
+            Encodes an ADB server-style request using a four-hex-digit length prefix.
+            </summary>
+            <param name="request">The request string.</param>
+            <returns>The encoded request bytes.</returns>
+        </member>
+        <member name="T:AdbSharp.Protocol.Fastboot.FastbootProtocol">
+            <summary>
+            Fastboot command and response codec.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Fastboot.FastbootProtocol.MaxCommandLength">
+            <summary>
+            Maximum command packet length in bytes.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Fastboot.FastbootProtocol.MaxResponseLength">
+            <summary>
+            Maximum response packet length in bytes.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Protocol.Fastboot.FastbootProtocol.EncodeCommand(System.String)">
+            <summary>
+            Encodes a Fastboot command.
+            </summary>
+            <param name="command">The command text.</param>
+            <returns>The ASCII command bytes.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Fastboot.FastbootProtocol.GetEncodedCommandLength(System.String)">
+            <summary>
+            Gets the encoded byte length of a Fastboot command.
+            </summary>
+            <param name="command">The command text.</param>
+            <returns>The ASCII byte length.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Fastboot.FastbootProtocol.EncodeCommand(System.String,System.Span{System.Byte})">
+            <summary>
+            Encodes a Fastboot command into a caller-provided buffer.
+            </summary>
+            <param name="command">The command text.</param>
+            <param name="destination">The destination buffer.</param>
+            <returns>The number of bytes written.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Fastboot.FastbootProtocol.ParseResponse(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Parses a Fastboot response packet.
+            </summary>
+            <param name="packet">The raw response packet.</param>
+            <returns>The parsed response.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Fastboot.FastbootProtocol.FormatDownloadCommand(System.Int64)">
+            <summary>
+            Formats the Fastboot download command for a byte length.
+            </summary>
+            <param name="length">The data length.</param>
+            <returns>The command text.</returns>
+        </member>
+        <member name="T:AdbSharp.Protocol.Fastboot.FastbootResponse">
+            <summary>
+            Parsed Fastboot response packet.
+            </summary>
+            <param name="Kind">The response kind.</param>
+            <param name="Payload">The payload after the four-byte response tag.</param>
+            <param name="DataLength">The requested data phase length for <see cref="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Data"/> responses.</param>
+        </member>
+        <member name="M:AdbSharp.Protocol.Fastboot.FastbootResponse.#ctor(AdbSharp.Protocol.Fastboot.FastbootResponseKind,System.String,System.Nullable{System.Int64})">
+            <summary>
+            Parsed Fastboot response packet.
+            </summary>
+            <param name="Kind">The response kind.</param>
+            <param name="Payload">The payload after the four-byte response tag.</param>
+            <param name="DataLength">The requested data phase length for <see cref="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Data"/> responses.</param>
+        </member>
+        <member name="P:AdbSharp.Protocol.Fastboot.FastbootResponse.Kind">
+            <summary>The response kind.</summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Fastboot.FastbootResponse.Payload">
+            <summary>The payload after the four-byte response tag.</summary>
+        </member>
+        <member name="P:AdbSharp.Protocol.Fastboot.FastbootResponse.DataLength">
+            <summary>The requested data phase length for <see cref="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Data"/> responses.</summary>
+        </member>
+        <member name="T:AdbSharp.Protocol.Fastboot.FastbootResponseKind">
+            <summary>
+            Fastboot response tag.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Okay">
+            <summary>
+            The command completed successfully.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Fail">
+            <summary>
+            The command failed.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Data">
+            <summary>
+            A data phase is requested.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Info">
+            <summary>
+            Informational progress text.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Protocol.Fastboot.FastbootResponseKind.Text">
+            <summary>
+            Unformatted text output.
+            </summary>
+        </member>
+    </members>
+</doc>

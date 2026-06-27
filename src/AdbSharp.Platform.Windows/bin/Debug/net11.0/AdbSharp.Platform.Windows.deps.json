@@ -1,0 +1,56 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v11.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v11.0": {
+      "AdbSharp.Platform.Windows/0.1.0": {
+        "dependencies": {
+          "AdbSharp.Common": "0.1.0",
+          "AdbSharp.Transport": "0.1.0"
+        },
+        "runtime": {
+          "AdbSharp.Platform.Windows.dll": {}
+        }
+      },
+      "AdbSharp.Common/0.1.0": {
+        "runtime": {
+          "AdbSharp.Common.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "AdbSharp.Transport/0.1.0": {
+        "dependencies": {
+          "AdbSharp.Common": "0.1.0"
+        },
+        "runtime": {
+          "AdbSharp.Transport.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AdbSharp.Platform.Windows/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AdbSharp.Common/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AdbSharp.Transport/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

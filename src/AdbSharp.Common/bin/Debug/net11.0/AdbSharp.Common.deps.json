@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v11.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v11.0": {
+      "AdbSharp.Common/0.1.0": {
+        "runtime": {
+          "AdbSharp.Common.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AdbSharp.Common/0.1.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

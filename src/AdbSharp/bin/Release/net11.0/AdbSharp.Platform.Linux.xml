@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Platform.Linux</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Platform.Linux.Usb.LinuxUsbTransportFactory">
+            <summary>
+            Linux USB provider backed by libusb.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Platform.Linux.Usb.LinuxUsbTransportFactory.PlatformName">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Linux.Usb.LinuxUsbTransportFactory.FindAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Linux.Usb.LinuxUsbTransportFactory.CanOpen(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Linux.Usb.LinuxUsbTransportFactory.OpenAsync(AdbSharp.Common.Devices.UsbDeviceDescriptor,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

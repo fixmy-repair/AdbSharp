@@ -1,0 +1,33 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/fixmy/AdbSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>AdbSharp Contributors</Authors>
+    <Company>AdbSharp Contributors</Company>
+    <Product>AdbSharp</Product>
+    <PackageProjectUrl>https://github.com/fixmy/AdbSharp</PackageProjectUrl>
+    <Description>Native managed .NET implementation of Android Platform Tools protocols.</Description>
+    <PackageTags>android;adb;fastboot;fastbootd;usb</PackageTags>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>$(NoWarn);CA1008;CA1028;CA1031;CA1032;CA1707;CA1711;CA1822;CA1849;CA1859;CA2000;CA2007;CA1512;IDE0005;IDE0008;IDE0010;IDE0022;IDE0046;IDE0048;IDE0058;IDE0072;IDE0078;IDE0160;IDE0270;IDE0330</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' != 'false'">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)docs\*.md" Pack="true" PackagePath="docs\" />
+  </ItemGroup>
+
+</Project>

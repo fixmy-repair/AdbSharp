@@ -1,0 +1,342 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Common</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Common.AdbSharpException">
+            <summary>
+            Base exception for AdbSharp failures.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Common.AdbSharpException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Common.AdbSharpException"/> class.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Common.AdbSharpException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Common.AdbSharpException"/> class.
+            </summary>
+            <param name="message">The failure message.</param>
+        </member>
+        <member name="M:AdbSharp.Common.AdbSharpException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Common.AdbSharpException"/> class.
+            </summary>
+            <param name="message">The failure message.</param>
+            <param name="innerException">The underlying failure.</param>
+        </member>
+        <member name="T:AdbSharp.Common.DeviceConnectionException">
+            <summary>
+            Represents a device connection failure.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Common.DeviceConnectionException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Common.DeviceConnectionException"/> class.
+            </summary>
+            <param name="message">The connection failure message.</param>
+        </member>
+        <member name="M:AdbSharp.Common.DeviceConnectionException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Common.DeviceConnectionException"/> class.
+            </summary>
+            <param name="message">The connection failure message.</param>
+            <param name="innerException">The underlying failure.</param>
+        </member>
+        <member name="T:AdbSharp.Common.Devices.AndroidDevice">
+            <summary>
+            Represents a detected Android device and the host transport descriptor needed to connect to it.
+            </summary>
+            <param name="Identity">The device identity.</param>
+            <param name="Mode">The detected communication mode.</param>
+            <param name="Capabilities">The capabilities discovered so far.</param>
+            <param name="Usb">The USB descriptor selected for device communication.</param>
+        </member>
+        <member name="M:AdbSharp.Common.Devices.AndroidDevice.#ctor(AdbSharp.Common.Devices.DeviceIdentity,AdbSharp.Common.Devices.DeviceMode,AdbSharp.Common.Devices.DeviceCapabilities,AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <summary>
+            Represents a detected Android device and the host transport descriptor needed to connect to it.
+            </summary>
+            <param name="Identity">The device identity.</param>
+            <param name="Mode">The detected communication mode.</param>
+            <param name="Capabilities">The capabilities discovered so far.</param>
+            <param name="Usb">The USB descriptor selected for device communication.</param>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.AndroidDevice.Identity">
+            <summary>The device identity.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.AndroidDevice.Mode">
+            <summary>The detected communication mode.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.AndroidDevice.Capabilities">
+            <summary>The capabilities discovered so far.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.AndroidDevice.Usb">
+            <summary>The USB descriptor selected for device communication.</summary>
+        </member>
+        <member name="T:AdbSharp.Common.Devices.DeviceCapabilities">
+            <summary>
+            Feature flags discovered from ADB or Fastboot capability probes.
+            </summary>
+            <param name="SupportsAdb">Indicates whether ADB services are available.</param>
+            <param name="SupportsFastboot">Indicates whether Fastboot commands are available.</param>
+            <param name="SupportsFastbootd">Indicates whether userspace Fastboot commands are available.</param>
+            <param name="SupportsFileSync">Indicates whether the ADB file sync service is available.</param>
+            <param name="SupportsShellV2">Indicates whether shell v2 features are advertised.</param>
+            <param name="SupportsTls">Indicates whether ADB stream TLS is advertised.</param>
+            <param name="SupportsDynamicPartitions">Indicates whether logical partition operations are supported.</param>
+            <param name="SupportsLogicalPartitions">Indicates whether logical partition commands are supported.</param>
+            <param name="SupportsSnapshotUpdates">Indicates whether snapshot update commands are supported.</param>
+            <param name="SupportsVirtualAb">Indicates whether Virtual A/B update behavior is detected.</param>
+        </member>
+        <member name="M:AdbSharp.Common.Devices.DeviceCapabilities.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Feature flags discovered from ADB or Fastboot capability probes.
+            </summary>
+            <param name="SupportsAdb">Indicates whether ADB services are available.</param>
+            <param name="SupportsFastboot">Indicates whether Fastboot commands are available.</param>
+            <param name="SupportsFastbootd">Indicates whether userspace Fastboot commands are available.</param>
+            <param name="SupportsFileSync">Indicates whether the ADB file sync service is available.</param>
+            <param name="SupportsShellV2">Indicates whether shell v2 features are advertised.</param>
+            <param name="SupportsTls">Indicates whether ADB stream TLS is advertised.</param>
+            <param name="SupportsDynamicPartitions">Indicates whether logical partition operations are supported.</param>
+            <param name="SupportsLogicalPartitions">Indicates whether logical partition commands are supported.</param>
+            <param name="SupportsSnapshotUpdates">Indicates whether snapshot update commands are supported.</param>
+            <param name="SupportsVirtualAb">Indicates whether Virtual A/B update behavior is detected.</param>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsAdb">
+            <summary>Indicates whether ADB services are available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsFastboot">
+            <summary>Indicates whether Fastboot commands are available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsFastbootd">
+            <summary>Indicates whether userspace Fastboot commands are available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsFileSync">
+            <summary>Indicates whether the ADB file sync service is available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsShellV2">
+            <summary>Indicates whether shell v2 features are advertised.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsTls">
+            <summary>Indicates whether ADB stream TLS is advertised.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsDynamicPartitions">
+            <summary>Indicates whether logical partition operations are supported.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsLogicalPartitions">
+            <summary>Indicates whether logical partition commands are supported.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsSnapshotUpdates">
+            <summary>Indicates whether snapshot update commands are supported.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.SupportsVirtualAb">
+            <summary>Indicates whether Virtual A/B update behavior is detected.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceCapabilities.Empty">
+            <summary>
+            Gets an empty capability set.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Common.Devices.DeviceIdentity">
+            <summary>
+            Stable descriptive identity for an Android device.
+            </summary>
+            <param name="SerialNumber">The device serial number when reported by the transport.</param>
+            <param name="Manufacturer">The USB manufacturer string when available.</param>
+            <param name="Product">The USB product string when available.</param>
+            <param name="Model">The Android model name when known.</param>
+            <param name="TransportId">A host-local stable transport identifier.</param>
+        </member>
+        <member name="M:AdbSharp.Common.Devices.DeviceIdentity.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Stable descriptive identity for an Android device.
+            </summary>
+            <param name="SerialNumber">The device serial number when reported by the transport.</param>
+            <param name="Manufacturer">The USB manufacturer string when available.</param>
+            <param name="Product">The USB product string when available.</param>
+            <param name="Model">The Android model name when known.</param>
+            <param name="TransportId">A host-local stable transport identifier.</param>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceIdentity.SerialNumber">
+            <summary>The device serial number when reported by the transport.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceIdentity.Manufacturer">
+            <summary>The USB manufacturer string when available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceIdentity.Product">
+            <summary>The USB product string when available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceIdentity.Model">
+            <summary>The Android model name when known.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.DeviceIdentity.TransportId">
+            <summary>A host-local stable transport identifier.</summary>
+        </member>
+        <member name="T:AdbSharp.Common.Devices.DeviceMode">
+            <summary>
+            Describes the Android communication mode exposed by a connected device.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Devices.DeviceMode.Unknown">
+            <summary>
+            The device mode is unknown.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Devices.DeviceMode.Adb">
+            <summary>
+            The device exposes the Android Debug Bridge protocol.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Devices.DeviceMode.Recovery">
+            <summary>
+            The device exposes ADB while in recovery.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Devices.DeviceMode.Bootloader">
+            <summary>
+            The device is in the bootloader.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Devices.DeviceMode.Fastboot">
+            <summary>
+            The device exposes bootloader Fastboot.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Devices.DeviceMode.Fastbootd">
+            <summary>
+            The device exposes userspace Fastboot.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Devices.DeviceMode.Sideload">
+            <summary>
+            The device exposes ADB sideload.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Common.Devices.UsbDeviceDescriptor">
+            <summary>
+            Transport-neutral USB metadata for an Android interface.
+            </summary>
+            <param name="TransportId">A host-local identifier that can be passed back to a transport factory.</param>
+            <param name="VendorId">The USB vendor identifier.</param>
+            <param name="ProductId">The USB product identifier.</param>
+            <param name="InterfaceNumber">The interface number selected for protocol I/O.</param>
+            <param name="InterfaceClass">The USB interface class.</param>
+            <param name="InterfaceSubClass">The USB interface subclass.</param>
+            <param name="InterfaceProtocol">The USB interface protocol.</param>
+            <param name="SerialNumber">The USB serial number when available.</param>
+            <param name="Manufacturer">The manufacturer string when available.</param>
+            <param name="Product">The product string when available.</param>
+        </member>
+        <member name="M:AdbSharp.Common.Devices.UsbDeviceDescriptor.#ctor(System.String,System.UInt16,System.UInt16,System.Byte,System.Byte,System.Byte,System.Byte,System.String,System.String,System.String)">
+            <summary>
+            Transport-neutral USB metadata for an Android interface.
+            </summary>
+            <param name="TransportId">A host-local identifier that can be passed back to a transport factory.</param>
+            <param name="VendorId">The USB vendor identifier.</param>
+            <param name="ProductId">The USB product identifier.</param>
+            <param name="InterfaceNumber">The interface number selected for protocol I/O.</param>
+            <param name="InterfaceClass">The USB interface class.</param>
+            <param name="InterfaceSubClass">The USB interface subclass.</param>
+            <param name="InterfaceProtocol">The USB interface protocol.</param>
+            <param name="SerialNumber">The USB serial number when available.</param>
+            <param name="Manufacturer">The manufacturer string when available.</param>
+            <param name="Product">The product string when available.</param>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.TransportId">
+            <summary>A host-local identifier that can be passed back to a transport factory.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.VendorId">
+            <summary>The USB vendor identifier.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.ProductId">
+            <summary>The USB product identifier.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.InterfaceNumber">
+            <summary>The interface number selected for protocol I/O.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.InterfaceClass">
+            <summary>The USB interface class.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.InterfaceSubClass">
+            <summary>The USB interface subclass.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.InterfaceProtocol">
+            <summary>The USB interface protocol.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.SerialNumber">
+            <summary>The USB serial number when available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.Manufacturer">
+            <summary>The manufacturer string when available.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Devices.UsbDeviceDescriptor.Product">
+            <summary>The product string when available.</summary>
+        </member>
+        <member name="T:AdbSharp.Common.Diagnostics.TransferDirection">
+            <summary>
+            Describes transfer direction for progress notifications.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Diagnostics.TransferDirection.Upload">
+            <summary>
+            Data is being sent to the device.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Common.Diagnostics.TransferDirection.Download">
+            <summary>
+            Data is being read from the device.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Common.Diagnostics.TransferProgress">
+            <summary>
+            Reports progress for a long-running USB transfer.
+            </summary>
+            <param name="Direction">The transfer direction.</param>
+            <param name="BytesTransferred">The number of bytes transferred so far.</param>
+            <param name="TotalBytes">The expected total length when known.</param>
+            <param name="Message">Optional contextual progress text.</param>
+        </member>
+        <member name="M:AdbSharp.Common.Diagnostics.TransferProgress.#ctor(AdbSharp.Common.Diagnostics.TransferDirection,System.Int64,System.Nullable{System.Int64},System.String)">
+            <summary>
+            Reports progress for a long-running USB transfer.
+            </summary>
+            <param name="Direction">The transfer direction.</param>
+            <param name="BytesTransferred">The number of bytes transferred so far.</param>
+            <param name="TotalBytes">The expected total length when known.</param>
+            <param name="Message">Optional contextual progress text.</param>
+        </member>
+        <member name="P:AdbSharp.Common.Diagnostics.TransferProgress.Direction">
+            <summary>The transfer direction.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Diagnostics.TransferProgress.BytesTransferred">
+            <summary>The number of bytes transferred so far.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Diagnostics.TransferProgress.TotalBytes">
+            <summary>The expected total length when known.</summary>
+        </member>
+        <member name="P:AdbSharp.Common.Diagnostics.TransferProgress.Message">
+            <summary>Optional contextual progress text.</summary>
+        </member>
+        <member name="T:AdbSharp.Common.ProtocolException">
+            <summary>
+            Represents malformed protocol data or an unexpected protocol transition.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Common.ProtocolException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Common.ProtocolException"/> class.
+            </summary>
+            <param name="message">The protocol failure message.</param>
+        </member>
+        <member name="M:AdbSharp.Common.ProtocolException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Common.ProtocolException"/> class.
+            </summary>
+            <param name="message">The protocol failure message.</param>
+            <param name="innerException">The underlying failure.</param>
+        </member>
+    </members>
+</doc>

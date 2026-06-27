@@ -1,0 +1,84 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "AdbSharp.Console: List Devices",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build sample",
+      "program": "${workspaceFolder}/samples/AdbSharp.Console/bin/Debug/net11.0/AdbSharp.Console.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "AdbSharp.Console: USB Diagnostics",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build sample",
+      "program": "${workspaceFolder}/samples/AdbSharp.Console/bin/Debug/net11.0/AdbSharp.Console.dll",
+      "args": [
+        "usb-diagnostics"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "AdbSharp.Console: ADB Shell getprop",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build sample",
+      "program": "${workspaceFolder}/samples/AdbSharp.Console/bin/Debug/net11.0/AdbSharp.Console.dll",
+      "args": [
+        "shell",
+        "getprop"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "AdbSharp.Console: Wireless ADB getprop",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build sample",
+      "program": "${workspaceFolder}/samples/AdbSharp.Console/bin/Debug/net11.0/AdbSharp.Console.dll",
+      "args": [
+        "tcp-getprop",
+        "127.0.0.1:5555"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "AdbSharp.Console: Fastboot getvar product",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build sample",
+      "program": "${workspaceFolder}/samples/AdbSharp.Console/bin/Debug/net11.0/AdbSharp.Console.dll",
+      "args": [
+        "fb-getvar",
+        "product"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "AdbSharp.Console: Fastbootd Capabilities",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build sample",
+      "program": "${workspaceFolder}/samples/AdbSharp.Console/bin/Debug/net11.0/AdbSharp.Console.dll",
+      "args": [
+        "fbd-capabilities"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    }
+  ]
+}

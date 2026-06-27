@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AdbSharp\AdbSharp.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Adb\AdbSharp.Adb.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Fastboot\AdbSharp.Fastboot.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Fastbootd\AdbSharp.Fastbootd.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Protocol\AdbSharp.Protocol.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Transport\AdbSharp.Transport.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Authentication\AdbSharp.Authentication.csproj" />
+  </ItemGroup>
+
+</Project>

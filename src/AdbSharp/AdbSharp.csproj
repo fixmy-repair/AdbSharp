@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdbSharp.Common\AdbSharp.Common.csproj" />
+    <ProjectReference Include="..\AdbSharp.Transport\AdbSharp.Transport.csproj" />
+    <ProjectReference Include="..\AdbSharp.Authentication\AdbSharp.Authentication.csproj" />
+    <ProjectReference Include="..\AdbSharp.Protocol\AdbSharp.Protocol.csproj" />
+    <ProjectReference Include="..\AdbSharp.Adb\AdbSharp.Adb.csproj" />
+    <ProjectReference Include="..\AdbSharp.Fastboot\AdbSharp.Fastboot.csproj" />
+    <ProjectReference Include="..\AdbSharp.Fastbootd\AdbSharp.Fastbootd.csproj" />
+    <ProjectReference Include="..\AdbSharp.Platform.Windows\AdbSharp.Platform.Windows.csproj" />
+    <ProjectReference Include="..\AdbSharp.Platform.Linux\AdbSharp.Platform.Linux.csproj" />
+    <ProjectReference Include="..\AdbSharp.Platform.Mac\AdbSharp.Platform.Mac.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

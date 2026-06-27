@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>AdbSharp.Transport</id>
+    <version>0.1.0</version>
+    <authors>AdbSharp Contributors</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/fixmy/AdbSharp</projectUrl>
+    <description>Native managed .NET implementation of Android Platform Tools protocols.</description>
+    <tags>android adb fastboot fastbootd usb</tags>
+    <repository type="git" url="https://github.com/fixmy/AdbSharp" />
+    <dependencies>
+      <group targetFramework="net11.0">
+        <dependency id="AdbSharp.Common" version="0.1.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Transport/bin/Release/net11.0/AdbSharp.Transport.dll" target="lib/net11.0/AdbSharp.Transport.dll" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Transport/bin/Release/net11.0/AdbSharp.Transport.xml" target="lib/net11.0/AdbSharp.Transport.xml" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/README.md" target="/README.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/ADB.md" target="docs/ADB.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Architecture.md" target="docs/Architecture.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Authentication.md" target="docs/Authentication.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Examples.md" target="docs/Examples.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Fastboot.md" target="docs/Fastboot.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Fastbootd.md" target="docs/Fastbootd.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/NOTICE.md" target="docs/NOTICE.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/PlatformSetup.md" target="docs/PlatformSetup.md" />
+  </files>
+</package>

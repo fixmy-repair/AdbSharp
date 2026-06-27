@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Authentication</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Authentication.Adb.AdbKeyPair">
+            <summary>
+            Represents an RSA key pair usable for ADB authentication.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.Create">
+            <summary>
+            Creates a new 2048-bit RSA ADB key pair.
+            </summary>
+            <returns>The created key pair.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.ImportPrivateKeyPem(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Imports a PEM-encoded private key.
+            </summary>
+            <param name="pem">The private key PEM.</param>
+            <returns>The imported key pair.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.ExportPrivateKeyPem">
+            <summary>
+            Exports the private key in PKCS#8 PEM format.
+            </summary>
+            <returns>The private key PEM.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.CreateSelfSignedCertificate">
+            <summary>
+            Creates a self-signed X.509 certificate for ADB TLS authentication.
+            </summary>
+            <returns>A self-signed certificate with the ADB RSA private key.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.SignToken(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Signs an ADB authentication token.
+            </summary>
+            <param name="token">The token to sign.</param>
+            <returns>The PKCS#1 SHA-1 signature.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.VerifyToken(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Verifies an ADB authentication signature.
+            </summary>
+            <param name="token">The token that was signed.</param>
+            <param name="signature">The signature to verify.</param>
+            <returns><see langword="true"/> when the signature is valid.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.ExportAdbPublicKey(System.String)">
+            <summary>
+            Exports the Android-specific ADB public key payload.
+            </summary>
+            <param name="comment">The key comment.</param>
+            <returns>A null-terminated ADB public key payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyPair.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Authentication.Adb.AdbKeyStore">
+            <summary>
+            Loads and creates local ADB host keys.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbKeyStore.LoadOrCreateAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Loads an existing key or creates a new key at the specified path.
+            </summary>
+            <param name="privateKeyPath">The private key PEM path.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The loaded key pair.</returns>
+        </member>
+        <member name="T:AdbSharp.Authentication.Adb.AdbRsaAuthenticator">
+            <summary>
+            ADB authenticator backed by a single RSA key pair.
+            </summary>
+            <param name="keyPair">The RSA key pair.</param>
+            <param name="comment">The public key comment.</param>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbRsaAuthenticator.#ctor(AdbSharp.Authentication.Adb.AdbKeyPair,System.String)">
+            <summary>
+            ADB authenticator backed by a single RSA key pair.
+            </summary>
+            <param name="keyPair">The RSA key pair.</param>
+            <param name="comment">The public key comment.</param>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbRsaAuthenticator.SignTokenAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbRsaAuthenticator.GetPublicKeyAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbRsaAuthenticator.GetClientCertificateAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.AdbRsaAuthenticator.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Authentication.Adb.IAdbAuthenticator">
+            <summary>
+            Supplies ADB authentication signatures and public keys.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.IAdbAuthenticator.SignTokenAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Signs an ADB authentication token.
+            </summary>
+            <param name="token">The token sent by the device.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The signature bytes, or <see langword="null"/> when no key is available.</returns>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.IAdbAuthenticator.GetPublicKeyAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets the public key payload to send to an Android device.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The null-terminated public key payload, or <see langword="null"/> when no key is available.</returns>
+        </member>
+        <member name="T:AdbSharp.Authentication.Adb.IAdbTlsAuthenticator">
+            <summary>
+            Supplies client certificates for ADB TLS transports.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Authentication.Adb.IAdbTlsAuthenticator.GetClientCertificateAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets the client certificate used for ADB TLS handshakes.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The client certificate, or <see langword="null"/> when no TLS credential is available.</returns>
+        </member>
+    </members>
+</doc>

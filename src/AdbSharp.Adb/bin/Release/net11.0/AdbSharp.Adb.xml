@@ -1,0 +1,1381 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp.Adb</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.Adb.AdbClient">
+            <summary>
+            Client for Android Debug Bridge services over native USB or TCP transports.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClient.Device">
+            <summary>
+            Gets the connected device.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ConnectAsync(AdbSharp.Common.Devices.AndroidDevice,AdbSharp.Adb.AdbClientOptions,System.Threading.CancellationToken)">
+            <summary>
+            Connects to an ADB-capable device.
+            </summary>
+            <param name="device">The device to connect.</param>
+            <param name="options">Connection options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The connected ADB client.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ConnectTcpAsync(System.String,System.Int32,AdbSharp.Adb.AdbClientOptions,System.Threading.CancellationToken)">
+            <summary>
+            Connects directly to an ADB daemon that is already listening on a TCP endpoint, commonly used for wireless debugging.
+            </summary>
+            <param name="host">The device host name or IP address.</param>
+            <param name="port">The ADB TCP port. The default is 5555.</param>
+            <param name="options">Connection options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The connected ADB client.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ConnectWirelessAsync(System.String,System.Int32,AdbSharp.Adb.AdbClientOptions,System.Threading.CancellationToken)">
+            <summary>
+            Connects directly to an ADB daemon that is already listening for wireless debugging.
+            </summary>
+            <param name="host">The device host name or IP address.</param>
+            <param name="port">The ADB TCP port. The default is 5555.</param>
+            <param name="options">Connection options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The connected ADB client.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ConnectWirelessAsync(AdbSharp.Adb.AdbMdnsService,AdbSharp.Adb.AdbClientOptions,System.Threading.CancellationToken)">
+            <summary>
+            Connects directly to an ADB daemon discovered through mDNS.
+            </summary>
+            <param name="service">The discovered ADB connection service.</param>
+            <param name="options">Connection options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The connected ADB client.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.OpenStreamAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Opens a raw ADB service stream.
+            </summary>
+            <param name="service">The service name, such as <c>shell:getprop</c>.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The opened stream.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ShellAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes a shell command and returns its output.
+            </summary>
+            <param name="command">The shell command.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The command output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ShellV2Async(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes a shell command with the ADB shell v2 protocol and returns stdout, stderr, and the exit code separately.
+            </summary>
+            <param name="command">The shell command.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The shell v2 result.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ExecAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes a command using the ADB exec service and returns its output.
+            </summary>
+            <param name="command">The command.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The command output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.GetPropertyAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Reads an Android system property using <c>getprop</c>.
+            </summary>
+            <param name="name">The property name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The property value.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.PushAsync(System.IO.Stream,System.String,System.Int32,System.IProgress{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Pushes a stream to the device using ADB file sync.
+            </summary>
+            <param name="source">The source stream.</param>
+            <param name="remotePath">The destination path on the device.</param>
+            <param name="mode">The Unix file mode.</param>
+            <param name="progress">Optional byte progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.PushAsync(System.IO.Stream,System.String,System.Int32,System.DateTimeOffset,System.IProgress{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Pushes a stream to the device using ADB file sync with an explicit modification time.
+            </summary>
+            <param name="source">The source stream.</param>
+            <param name="remotePath">The destination path on the device.</param>
+            <param name="mode">The Unix file mode.</param>
+            <param name="modifiedTime">The modification time written to the device.</param>
+            <param name="progress">Optional byte progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.PullAsync(System.String,System.IO.Stream,System.IProgress{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Pulls a file from the device using ADB file sync.
+            </summary>
+            <param name="remotePath">The source path on the device.</param>
+            <param name="destination">The destination stream.</param>
+            <param name="progress">Optional byte progress.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.LstatAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Reads file metadata without following symbolic links when the connected device supports that distinction.
+            </summary>
+            <param name="remotePath">The device path.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The file metadata, or <see langword="null" /> when the path does not exist.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.StatAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Reads file metadata. On devices without sync stat v2, this falls back to the legacy lstat operation.
+            </summary>
+            <param name="remotePath">The device path.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The file metadata, or <see langword="null" /> when the path does not exist.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ListDirectoryAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Lists a directory using ADB file sync.
+            </summary>
+            <param name="remotePath">The device directory path.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The directory entries reported by the device.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.LogcatAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Starts streaming logcat output as UTF-8 lines.
+            </summary>
+            <param name="arguments">Optional arguments passed to <c>logcat</c>.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>An async stream of logcat lines.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.InstallApkAsync(System.IO.Stream,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Installs an APK by pushing it to a temporary path and invoking package manager install.
+            </summary>
+            <param name="apk">The APK stream.</param>
+            <param name="fileName">The APK file name used on the device.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package manager output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.CreateInstallSessionAsync(AdbSharp.Adb.AdbInstallOptions,System.Nullable{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Creates an Android package install session.
+            </summary>
+            <param name="options">Install session options.</param>
+            <param name="totalSize">Optional total package size for the session.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The created install session.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.InstallPackagesAsync(System.Collections.Generic.IReadOnlyList{AdbSharp.Adb.AdbPackageFile},AdbSharp.Adb.AdbInstallOptions,System.IProgress{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Installs one or more APK files using an Android package install session.
+            </summary>
+            <param name="packages">The APK files or split APK files to install.</param>
+            <param name="options">Install session options.</param>
+            <param name="progress">Optional cumulative byte progress across all package files.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The completed install result.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.InstallStagedPackagesAsync(System.Collections.Generic.IReadOnlyList{AdbSharp.Adb.AdbPackageFile},AdbSharp.Adb.AdbInstallOptions,System.IProgress{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Installs one or more APK files using a staged Android package install session.
+            </summary>
+            <param name="packages">The APK files or split APK files to install.</param>
+            <param name="options">Install session options.</param>
+            <param name="progress">Optional cumulative byte progress across all package files.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The completed install result.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ListPackagesAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Lists installed package names using the device package manager.
+            </summary>
+            <param name="filter">Optional package-name filter.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package names reported by the device.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.UninstallPackageAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Uninstalls an Android package.
+            </summary>
+            <param name="packageName">The package name.</param>
+            <param name="keepData">Whether to keep package data and cache directories.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package manager output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ClearPackageDataAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Clears package data using the device package manager.
+            </summary>
+            <param name="packageName">The package name.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package manager output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.StartPortForwardAsync(System.Int32,AdbSharp.Adb.AdbSocketSpec,System.Threading.CancellationToken)">
+            <summary>
+            Starts a local TCP listener and forwards accepted sockets to a device-side ADB socket.
+            </summary>
+            <param name="localPort">The local TCP port. Use zero to request an ephemeral port.</param>
+            <param name="remote">The device-side socket specification.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The active forwarding session.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ReverseForwardAsync(AdbSharp.Adb.AdbSocketSpec,AdbSharp.Adb.AdbSocketSpec,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Requests device-side reverse forwarding from a device socket to a host socket.
+            </summary>
+            <param name="remote">The device-side listening socket.</param>
+            <param name="local">The host-side destination socket.</param>
+            <param name="noRebind">Whether an existing reverse mapping must be preserved instead of replaced.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The device service response payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.RemoveReverseForwardAsync(AdbSharp.Adb.AdbSocketSpec,System.Threading.CancellationToken)">
+            <summary>
+            Removes a device-side reverse forwarding rule.
+            </summary>
+            <param name="remote">The device-side listening socket.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The device service response payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.RemoveAllReverseForwardsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Removes all device-side reverse forwarding rules.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The device service response payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.ListReverseForwardsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Lists device-side reverse forwarding rules.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The textual reverse forwarding table reported by the device.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.RebootAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reboots the device normally.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.RebootBootloaderAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reboots the device to bootloader.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.RebootRecoveryAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reboots the device to recovery.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbClient.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Adb.AdbClientOptions">
+            <summary>
+            Options used when connecting to an ADB device.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.TransportFactory">
+            <summary>
+            Gets or sets the USB transport factory used by <see cref="M:AdbSharp.Adb.AdbClient.ConnectAsync(AdbSharp.Common.Devices.AndroidDevice,AdbSharp.Adb.AdbClientOptions,System.Threading.CancellationToken)" />. When omitted, the global transport registry is used.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.Authenticator">
+            <summary>
+            Gets or sets the authenticator used for device authorization.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.EnableTls">
+            <summary>
+            Gets or sets a value indicating whether ADB <c>STLS</c> transport upgrades are allowed.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.TlsTargetHost">
+            <summary>
+            Gets or sets the TLS target host name used for ADB TLS handshakes.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.TlsCertificateProvider">
+            <summary>
+            Gets or sets an optional client certificate provider for ADB TLS handshakes.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.SystemIdentity">
+            <summary>
+            Gets or sets the host identity payload advertised during connection.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.MaxPayload">
+            <summary>
+            Gets or sets the host maximum payload size.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbDirectoryEntry">
+            <summary>
+            Represents a directory entry returned by the ADB file sync list operation.
+            </summary>
+            <param name="Name">The entry name as reported by the device.</param>
+            <param name="Statistics">The entry metadata.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbDirectoryEntry.#ctor(System.String,AdbSharp.Adb.AdbFileStat)">
+            <summary>
+            Represents a directory entry returned by the ADB file sync list operation.
+            </summary>
+            <param name="Name">The entry name as reported by the device.</param>
+            <param name="Statistics">The entry metadata.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbDirectoryEntry.Name">
+            <summary>The entry name as reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbDirectoryEntry.Statistics">
+            <summary>The entry metadata.</summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbFileStat">
+            <summary>
+            Represents metadata returned by the ADB file sync protocol.
+            </summary>
+            <param name="Path">The device path for the file or directory entry.</param>
+            <param name="Mode">The Unix mode bits.</param>
+            <param name="Size">The file size in bytes.</param>
+            <param name="ModifiedTime">The modification time.</param>
+            <param name="AccessTime">The access time when reported by the device.</param>
+            <param name="ChangeTime">The metadata change time when reported by the device.</param>
+            <param name="DeviceId">The device identifier when reported by the device.</param>
+            <param name="Inode">The inode number when reported by the device.</param>
+            <param name="LinkCount">The hard-link count when reported by the device.</param>
+            <param name="UserId">The owner user identifier when reported by the device.</param>
+            <param name="GroupId">The owner group identifier when reported by the device.</param>
+            <param name="DeviceErrorCode">The device-side error code for directory entries that could not be inspected.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbFileStat.#ctor(System.String,System.UInt32,System.Int64,System.DateTimeOffset,System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.UInt64,System.UInt64,System.UInt32,System.UInt32,System.UInt32,System.Int32)">
+            <summary>
+            Represents metadata returned by the ADB file sync protocol.
+            </summary>
+            <param name="Path">The device path for the file or directory entry.</param>
+            <param name="Mode">The Unix mode bits.</param>
+            <param name="Size">The file size in bytes.</param>
+            <param name="ModifiedTime">The modification time.</param>
+            <param name="AccessTime">The access time when reported by the device.</param>
+            <param name="ChangeTime">The metadata change time when reported by the device.</param>
+            <param name="DeviceId">The device identifier when reported by the device.</param>
+            <param name="Inode">The inode number when reported by the device.</param>
+            <param name="LinkCount">The hard-link count when reported by the device.</param>
+            <param name="UserId">The owner user identifier when reported by the device.</param>
+            <param name="GroupId">The owner group identifier when reported by the device.</param>
+            <param name="DeviceErrorCode">The device-side error code for directory entries that could not be inspected.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.Path">
+            <summary>The device path for the file or directory entry.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.Mode">
+            <summary>The Unix mode bits.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.Size">
+            <summary>The file size in bytes.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.ModifiedTime">
+            <summary>The modification time.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.AccessTime">
+            <summary>The access time when reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.ChangeTime">
+            <summary>The metadata change time when reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.DeviceId">
+            <summary>The device identifier when reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.Inode">
+            <summary>The inode number when reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.LinkCount">
+            <summary>The hard-link count when reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.UserId">
+            <summary>The owner user identifier when reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.GroupId">
+            <summary>The owner group identifier when reported by the device.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.DeviceErrorCode">
+            <summary>The device-side error code for directory entries that could not be inspected.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.Exists">
+            <summary>
+            Gets a value indicating whether the metadata describes an existing filesystem entry.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.IsDirectory">
+            <summary>
+            Gets a value indicating whether the mode describes a directory.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.IsRegularFile">
+            <summary>
+            Gets a value indicating whether the mode describes a regular file.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbFileStat.IsSymbolicLink">
+            <summary>
+            Gets a value indicating whether the mode describes a symbolic link.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbInstallOptions">
+            <summary>
+            Options used when creating Android package install sessions.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.ReplaceExisting">
+            <summary>
+            Gets or sets a value indicating whether an existing package can be replaced.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.AllowTestPackages">
+            <summary>
+            Gets or sets a value indicating whether test-only packages are allowed.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.AllowDowngrade">
+            <summary>
+            Gets or sets a value indicating whether version downgrade is allowed.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.GrantRuntimePermissions">
+            <summary>
+            Gets or sets a value indicating whether all runtime permissions should be granted at install time.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.Staged">
+            <summary>
+            Gets or sets a value indicating whether the session should be staged and applied after reboot.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.EnableRollback">
+            <summary>
+            Gets or sets a value indicating whether rollback should be enabled for the install session.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.DontKill">
+            <summary>
+            Gets or sets a value indicating whether package manager should avoid killing the app during replacement.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.PackageName">
+            <summary>
+            Gets or sets the package name to install or update.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.InheritPackageName">
+            <summary>
+            Gets or sets the package name to inherit from for partial installs.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.InstallerPackageName">
+            <summary>
+            Gets or sets the installer package name.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.UserId">
+            <summary>
+            Gets or sets the Android user id, such as <c>0</c>.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbInstallOptions.StagedReadyTimeout">
+            <summary>
+            Gets or sets the staged-session ready timeout used when committing staged sessions.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbMdnsDiscovery">
+            <summary>
+            Discovers Android Debug Bridge services advertised through mDNS/DNS-SD.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbMdnsDiscovery.FindAsync(AdbSharp.Adb.AdbMdnsDiscoveryOptions,System.Threading.CancellationToken)">
+            <summary>
+            Queries the local network for Android ADB mDNS services.
+            </summary>
+            <param name="options">Discovery options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The discovered ADB mDNS services.</returns>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbMdnsDiscoveryOptions">
+            <summary>
+            Options used when discovering ADB services through mDNS/DNS-SD.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsDiscoveryOptions.Timeout">
+            <summary>
+            Gets or sets the total discovery window.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsDiscoveryOptions.ServiceKinds">
+            <summary>
+            Gets or sets the service kinds to query. When omitted, all Android ADB mDNS service types are queried.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsDiscoveryOptions.IncludeIPv4">
+            <summary>
+            Gets or sets a value indicating whether IPv4 multicast should be queried.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsDiscoveryOptions.IncludeIPv6">
+            <summary>
+            Gets or sets a value indicating whether IPv6 multicast should be queried.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbMdnsService">
+            <summary>
+            Describes an ADB service discovered through mDNS/DNS-SD.
+            </summary>
+            <param name="instanceName">The DNS-SD service instance name.</param>
+            <param name="serviceType">The ADB DNS-SD service type.</param>
+            <param name="kind">The recognized ADB service kind.</param>
+            <param name="targetHost">The SRV target host name.</param>
+            <param name="port">The TCP port advertised by the service.</param>
+            <param name="addresses">The resolved target host addresses.</param>
+            <param name="txtRecords">The DNS-SD TXT records advertised by the service.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbMdnsService.#ctor(System.String,System.String,AdbSharp.Adb.AdbMdnsServiceKind,System.String,System.Int32,System.Collections.Generic.IReadOnlyList{System.Net.IPAddress},System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">
+            <summary>
+            Describes an ADB service discovered through mDNS/DNS-SD.
+            </summary>
+            <param name="instanceName">The DNS-SD service instance name.</param>
+            <param name="serviceType">The ADB DNS-SD service type.</param>
+            <param name="kind">The recognized ADB service kind.</param>
+            <param name="targetHost">The SRV target host name.</param>
+            <param name="port">The TCP port advertised by the service.</param>
+            <param name="addresses">The resolved target host addresses.</param>
+            <param name="txtRecords">The DNS-SD TXT records advertised by the service.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.InstanceName">
+            <summary>
+            Gets the DNS-SD service instance name.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.ServiceType">
+            <summary>
+            Gets the ADB DNS-SD service type.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.Kind">
+            <summary>
+            Gets the recognized ADB service kind.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.TargetHost">
+            <summary>
+            Gets the SRV target host name.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.Port">
+            <summary>
+            Gets the TCP port advertised by the service.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.Addresses">
+            <summary>
+            Gets the resolved target host addresses.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.TxtRecords">
+            <summary>
+            Gets the DNS-SD TXT records advertised by the service.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbMdnsService.Host">
+            <summary>
+            Gets the preferred host string for direct TCP connections.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbMdnsServiceKind">
+            <summary>
+            Identifies Android Debug Bridge mDNS service categories.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbMdnsServiceKind.LegacyAdb">
+            <summary>
+            The legacy unencrypted ADB TCP service, advertised as <c>_adb._tcp</c>.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbMdnsServiceKind.Pairing">
+            <summary>
+            The Android 11+ wireless debugging pairing service, advertised as <c>_adb-tls-pairing._tcp</c>.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbMdnsServiceKind.Connect">
+            <summary>
+            The Android 11+ paired wireless debugging connection service, advertised as <c>_adb-tls-connect._tcp</c>.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbMdnsServiceTypes">
+            <summary>
+            Android Debug Bridge DNS-SD service type constants.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbMdnsServiceTypes.LegacyAdb">
+            <summary>
+            The legacy unencrypted ADB TCP service type.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbMdnsServiceTypes.Pairing">
+            <summary>
+            The Android 11+ wireless debugging pairing service type.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbMdnsServiceTypes.Connect">
+            <summary>
+            The Android 11+ paired wireless debugging connection service type.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPackageFile">
+            <summary>
+            Describes an APK or split APK stream written into an Android package install session.
+            </summary>
+            <param name="contents">The APK stream.</param>
+            <param name="splitName">The split name used by package manager, such as <c>base.apk</c>.</param>
+            <param name="size">The number of bytes to write. When omitted, the remaining length of a seekable stream is used.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageFile.#ctor(System.IO.Stream,System.String,System.Nullable{System.Int64})">
+            <summary>
+            Describes an APK or split APK stream written into an Android package install session.
+            </summary>
+            <param name="contents">The APK stream.</param>
+            <param name="splitName">The split name used by package manager, such as <c>base.apk</c>.</param>
+            <param name="size">The number of bytes to write. When omitted, the remaining length of a seekable stream is used.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageFile.Contents">
+            <summary>
+            Gets the APK stream.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageFile.SplitName">
+            <summary>
+            Gets the split name used by package manager.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageFile.Size">
+            <summary>
+            Gets the number of bytes to write.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPackageInstallResult">
+            <summary>
+            Describes a completed Android package install session.
+            </summary>
+            <param name="SessionId">The package manager session id.</param>
+            <param name="Output">The package manager commit output.</param>
+            <param name="IsStaged">Indicates whether the install was staged for application after reboot.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageInstallResult.#ctor(System.Int32,System.String,System.Boolean)">
+            <summary>
+            Describes a completed Android package install session.
+            </summary>
+            <param name="SessionId">The package manager session id.</param>
+            <param name="Output">The package manager commit output.</param>
+            <param name="IsStaged">Indicates whether the install was staged for application after reboot.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageInstallResult.SessionId">
+            <summary>The package manager session id.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageInstallResult.Output">
+            <summary>The package manager commit output.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageInstallResult.IsStaged">
+            <summary>Indicates whether the install was staged for application after reboot.</summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPackageInstallSession">
+            <summary>
+            Represents an active Android package install session.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageInstallSession.SessionId">
+            <summary>
+            Gets the Android package manager session id.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageInstallSession.IsStaged">
+            <summary>
+            Gets a value indicating whether this is a staged install session.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageInstallSession.WriteAsync(AdbSharp.Adb.AdbPackageFile,System.IProgress{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Writes an APK or split APK into the install session.
+            </summary>
+            <param name="packageFile">The package file to write.</param>
+            <param name="progress">Optional cumulative byte progress for this package file.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package manager output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageInstallSession.WriteAsync(System.IO.Stream,System.String,System.Int64,System.IProgress{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Writes an APK or split APK stream into the install session.
+            </summary>
+            <param name="contents">The APK stream.</param>
+            <param name="splitName">The split name used by package manager.</param>
+            <param name="size">The number of bytes to write.</param>
+            <param name="progress">Optional cumulative byte progress for this package file.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package manager output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageInstallSession.CommitAsync(System.Threading.CancellationToken)">
+            <summary>
+            Commits the install session.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package manager output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageInstallSession.AbandonAsync(System.Threading.CancellationToken)">
+            <summary>
+            Abandons the install session.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The package manager output.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageInstallSession.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPackageManagerException">
+            <summary>
+            Represents a device-side Android package manager failure.
+            </summary>
+            <param name="message">The package manager failure message.</param>
+            <param name="output">The raw package manager output.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPackageManagerException.#ctor(System.String,System.String)">
+            <summary>
+            Represents a device-side Android package manager failure.
+            </summary>
+            <param name="message">The package manager failure message.</param>
+            <param name="output">The raw package manager output.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPackageManagerException.Output">
+            <summary>
+            Gets the raw package manager output.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingClient">
+            <summary>
+            Pairs an ADB host key with an Android wireless debugging pairing endpoint.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPairingClient.PairAsync(AdbSharp.Adb.AdbMdnsService,System.String,AdbSharp.Authentication.Adb.AdbKeyPair,AdbSharp.Adb.AdbPairingOptions,System.Threading.CancellationToken)">
+            <summary>
+            Pairs with an Android wireless debugging endpoint discovered through mDNS.
+            </summary>
+            <param name="service">The discovered pairing service.</param>
+            <param name="pairingCode">The pairing code shown by Android wireless debugging.</param>
+            <param name="keyPair">The ADB host key pair to authorize.</param>
+            <param name="options">Pairing options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The completed pairing result.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPairingClient.PairAsync(System.String,System.Int32,System.String,AdbSharp.Authentication.Adb.AdbKeyPair,AdbSharp.Adb.AdbPairingOptions,System.Threading.CancellationToken)">
+            <summary>
+            Pairs with an Android wireless debugging endpoint.
+            </summary>
+            <param name="host">The pairing endpoint host name or IP address.</param>
+            <param name="port">The pairing endpoint port shown by Android wireless debugging.</param>
+            <param name="pairingCode">The pairing code shown by Android wireless debugging.</param>
+            <param name="keyPair">The ADB host key pair to authorize.</param>
+            <param name="options">Pairing options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The completed pairing result.</returns>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingCompatibilityEndpoint">
+            <summary>
+            Describes an Android wireless debugging pairing endpoint used for hardware compatibility validation.
+            </summary>
+            <param name="Vendor">The device vendor or OEM name used for compatibility reporting.</param>
+            <param name="Model">The device model name used for compatibility reporting.</param>
+            <param name="Host">The pairing endpoint host name or IP address.</param>
+            <param name="PairingPort">The pairing endpoint port shown by Android wireless debugging.</param>
+            <param name="PairingCode">The fresh pairing code shown by Android wireless debugging.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.#ctor(System.String,System.String,System.String,System.Int32,System.String)">
+            <summary>
+            Describes an Android wireless debugging pairing endpoint used for hardware compatibility validation.
+            </summary>
+            <param name="Vendor">The device vendor or OEM name used for compatibility reporting.</param>
+            <param name="Model">The device model name used for compatibility reporting.</param>
+            <param name="Host">The pairing endpoint host name or IP address.</param>
+            <param name="PairingPort">The pairing endpoint port shown by Android wireless debugging.</param>
+            <param name="PairingCode">The fresh pairing code shown by Android wireless debugging.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.Vendor">
+            <summary>The device vendor or OEM name used for compatibility reporting.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.Model">
+            <summary>The device model name used for compatibility reporting.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.Host">
+            <summary>The pairing endpoint host name or IP address.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.PairingPort">
+            <summary>The pairing endpoint port shown by Android wireless debugging.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.PairingCode">
+            <summary>The fresh pairing code shown by Android wireless debugging.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.AdbPort">
+            <summary>
+            Gets the optional ADB TCP port to probe after pairing succeeds.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.ExpectedManufacturer">
+            <summary>
+            Gets the optional expected value of <c>ro.product.manufacturer</c> after the post-pair ADB connection succeeds.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.ExpectedModel">
+            <summary>
+            Gets the optional expected value of <c>ro.product.model</c> after the post-pair ADB connection succeeds.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingCompatibilityOptions">
+            <summary>
+            Options for Android wireless debugging pairing hardware compatibility validation.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityOptions.PairingOptions">
+            <summary>
+            Gets or sets pairing options passed to the ADB wireless pairing client.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityOptions.AdbOptions">
+            <summary>
+            Gets or sets ADB connection options used for the optional post-pair smoke check.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityOptions.VerifyAdbConnection">
+            <summary>
+            Gets or sets a value indicating whether the validator should connect to the ADB TCP endpoint after pairing.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityOptions.DefaultAdbPort">
+            <summary>
+            Gets or sets the default ADB TCP port used when <see cref="P:AdbSharp.Adb.AdbPairingCompatibilityEndpoint.AdbPort" /> is omitted.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingCompatibilityResult">
+            <summary>
+            Reports the result of validating an Android wireless debugging pairing endpoint against real hardware.
+            </summary>
+            <param name="Vendor">The vendor or OEM name supplied for the endpoint.</param>
+            <param name="Model">The model name supplied for the endpoint.</param>
+            <param name="Host">The pairing endpoint host name or IP address.</param>
+            <param name="PairingPort">The pairing endpoint port.</param>
+            <param name="PairingSucceeded">A value indicating whether the pairing exchange completed.</param>
+            <param name="AdbConnectionTested">A value indicating whether the ADB TCP smoke check was attempted.</param>
+            <param name="AdbConnectionSucceeded">A value indicating whether the ADB TCP smoke check completed.</param>
+            <param name="Elapsed">The elapsed validation time.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPairingCompatibilityResult.#ctor(System.String,System.String,System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.TimeSpan)">
+            <summary>
+            Reports the result of validating an Android wireless debugging pairing endpoint against real hardware.
+            </summary>
+            <param name="Vendor">The vendor or OEM name supplied for the endpoint.</param>
+            <param name="Model">The model name supplied for the endpoint.</param>
+            <param name="Host">The pairing endpoint host name or IP address.</param>
+            <param name="PairingPort">The pairing endpoint port.</param>
+            <param name="PairingSucceeded">A value indicating whether the pairing exchange completed.</param>
+            <param name="AdbConnectionTested">A value indicating whether the ADB TCP smoke check was attempted.</param>
+            <param name="AdbConnectionSucceeded">A value indicating whether the ADB TCP smoke check completed.</param>
+            <param name="Elapsed">The elapsed validation time.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.Vendor">
+            <summary>The vendor or OEM name supplied for the endpoint.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.Model">
+            <summary>The model name supplied for the endpoint.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.Host">
+            <summary>The pairing endpoint host name or IP address.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.PairingPort">
+            <summary>The pairing endpoint port.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.PairingSucceeded">
+            <summary>A value indicating whether the pairing exchange completed.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.AdbConnectionTested">
+            <summary>A value indicating whether the ADB TCP smoke check was attempted.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.AdbConnectionSucceeded">
+            <summary>A value indicating whether the ADB TCP smoke check completed.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.Elapsed">
+            <summary>The elapsed validation time.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.AdbPort">
+            <summary>
+            Gets the ADB TCP port used for the optional post-pair smoke check.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.PeerInfoKind">
+            <summary>
+            Gets the peer-info kind returned by the device after pairing succeeds.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.DeviceGuid">
+            <summary>
+            Gets the device GUID returned by the peer-info exchange when available.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.ProductManufacturer">
+            <summary>
+            Gets the manufacturer reported by <c>ro.product.manufacturer</c> during the post-pair ADB smoke check.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.ProductModel">
+            <summary>
+            Gets the model reported by <c>ro.product.model</c> during the post-pair ADB smoke check.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.ExpectedManufacturerMatched">
+            <summary>
+            Gets a value indicating whether the reported manufacturer matched the expected manufacturer, when one was supplied.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.ExpectedModelMatched">
+            <summary>
+            Gets a value indicating whether the reported model matched the expected model, when one was supplied.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.ErrorType">
+            <summary>
+            Gets the exception type when validation failed.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.ErrorMessage">
+            <summary>
+            Gets the sanitized validation failure message.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingCompatibilityResult.IsCompatible">
+            <summary>
+            Gets a value indicating whether this endpoint passed the requested compatibility checks.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingCompatibilityValidator">
+            <summary>
+            Runs an Android 11+ wireless debugging pairing compatibility check against a real device endpoint.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPairingCompatibilityValidator.ValidateAsync(AdbSharp.Adb.AdbPairingCompatibilityEndpoint,AdbSharp.Authentication.Adb.AdbKeyPair,AdbSharp.Adb.AdbPairingCompatibilityOptions,System.Threading.CancellationToken)">
+            <summary>
+            Pairs with a wireless debugging endpoint and optionally verifies the resulting ADB TCP endpoint.
+            </summary>
+            <param name="endpoint">The hardware endpoint to validate.</param>
+            <param name="keyPair">The ADB host key used for pairing and optional ADB authorization.</param>
+            <param name="options">Compatibility validation options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>A sanitized compatibility validation result.</returns>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingOptions">
+            <summary>
+            Options used when pairing with an Android wireless debugging endpoint.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingOptions.Backend">
+            <summary>
+            Gets or sets an optional backend that implements the secure ADB pairing TLS, exporter, SPAKE2, and AES-GCM operations. When omitted, the built-in managed backend is used.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingOptions.PublicKeyComment">
+            <summary>
+            Gets or sets the public key comment placed in the host ADB public key payload.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingPeerInfo">
+            <summary>
+            Represents the fixed-size peer information exchanged after ADB wireless pairing authentication succeeds.
+            </summary>
+            <param name="kind">The peer information kind.</param>
+            <param name="data">The peer information payload.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPairingPeerInfo.#ctor(AdbSharp.Adb.AdbPairingPeerInfoKind,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Represents the fixed-size peer information exchanged after ADB wireless pairing authentication succeeds.
+            </summary>
+            <param name="kind">The peer information kind.</param>
+            <param name="data">The peer information payload.</param>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbPairingPeerInfo.WireSize">
+            <summary>
+            The exact size of an ADB pairing peer-info record on the wire.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbPairingPeerInfo.MaxDataSize">
+            <summary>
+            The maximum peer-info payload size.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingPeerInfo.Kind">
+            <summary>
+            Gets the peer information kind.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingPeerInfo.Data">
+            <summary>
+            Gets the peer information payload without trailing zero padding.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingPeerInfoKind">
+            <summary>
+            Identifies the kind of peer information exchanged during ADB wireless pairing.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbPairingPeerInfoKind.AdbRsaPublicKey">
+            <summary>
+            An ADB RSA public key payload.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Adb.AdbPairingPeerInfoKind.DeviceGuid">
+            <summary>
+            A device GUID payload.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPairingResult">
+            <summary>
+            Describes a completed ADB wireless pairing exchange.
+            </summary>
+            <param name="Host">The paired endpoint host.</param>
+            <param name="Port">The paired endpoint port.</param>
+            <param name="PeerInfo">The peer information returned by the Android device.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPairingResult.#ctor(System.String,System.Int32,AdbSharp.Adb.AdbPairingPeerInfo)">
+            <summary>
+            Describes a completed ADB wireless pairing exchange.
+            </summary>
+            <param name="Host">The paired endpoint host.</param>
+            <param name="Port">The paired endpoint port.</param>
+            <param name="PeerInfo">The peer information returned by the Android device.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingResult.Host">
+            <summary>The paired endpoint host.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingResult.Port">
+            <summary>The paired endpoint port.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPairingResult.PeerInfo">
+            <summary>The peer information returned by the Android device.</summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbPortForward">
+            <summary>
+            Represents an active local TCP listener that forwards accepted sockets to a device-side ADB endpoint.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPortForward.LocalEndPoint">
+            <summary>
+            Gets the local TCP endpoint used by the listener.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbPortForward.Remote">
+            <summary>
+            Gets the remote device-side socket specification.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbPortForward.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Adb.AdbShellResult">
+            <summary>
+            Captures the result returned by the ADB shell v2 protocol.
+            </summary>
+            <param name="ExitCode">The process exit code, or <see langword="null" /> when the device closed the stream before reporting one.</param>
+            <param name="StandardOutput">The UTF-8 decoded standard output stream.</param>
+            <param name="StandardError">The UTF-8 decoded standard error stream.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbShellResult.#ctor(System.Nullable{System.Int32},System.String,System.String)">
+            <summary>
+            Captures the result returned by the ADB shell v2 protocol.
+            </summary>
+            <param name="ExitCode">The process exit code, or <see langword="null" /> when the device closed the stream before reporting one.</param>
+            <param name="StandardOutput">The UTF-8 decoded standard output stream.</param>
+            <param name="StandardError">The UTF-8 decoded standard error stream.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbShellResult.ExitCode">
+            <summary>The process exit code, or <see langword="null" /> when the device closed the stream before reporting one.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbShellResult.StandardOutput">
+            <summary>The UTF-8 decoded standard output stream.</summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbShellResult.StandardError">
+            <summary>The UTF-8 decoded standard error stream.</summary>
+        </member>
+        <member name="T:AdbSharp.Adb.AdbSocketSpec">
+            <summary>
+            Represents an ADB socket specification such as <c>tcp:5555</c> or <c>localabstract:debug</c>.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Adb.AdbSocketSpec"/> class.
+            </summary>
+            <param name="value">The encoded socket specification sent to the device.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbSocketSpec.Value">
+            <summary>
+            Gets the encoded socket specification sent to the device.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.Tcp(System.Int32)">
+            <summary>
+            Creates a TCP socket specification.
+            </summary>
+            <param name="port">The TCP port. Use zero for an automatically selected local port where supported.</param>
+            <returns>The socket specification.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.LocalAbstract(System.String)">
+            <summary>
+            Creates a Linux abstract namespace local socket specification.
+            </summary>
+            <param name="name">The local socket name.</param>
+            <returns>The socket specification.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.LocalReserved(System.String)">
+            <summary>
+            Creates a Linux reserved namespace local socket specification.
+            </summary>
+            <param name="name">The local socket name.</param>
+            <returns>The socket specification.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.LocalFileSystem(System.String)">
+            <summary>
+            Creates a Linux filesystem namespace local socket specification.
+            </summary>
+            <param name="path">The device-side socket path.</param>
+            <returns>The socket specification.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.Device(System.String)">
+            <summary>
+            Creates a device file socket specification.
+            </summary>
+            <param name="path">The device path.</param>
+            <returns>The socket specification.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.Jdwp(System.Int32)">
+            <summary>
+            Creates a JDWP process socket specification.
+            </summary>
+            <param name="processId">The target process identifier.</param>
+            <returns>The socket specification.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSocketSpec.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Adb.AdbStream">
+            <summary>
+            Represents a multiplexed ADB logical stream.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbStream.LocalId">
+            <summary>
+            Gets the local stream identifier.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbStream.RemoteId">
+            <summary>
+            Gets the remote stream identifier after the stream is opened.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Reads stream data.
+            </summary>
+            <param name="buffer">The destination buffer.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The number of bytes read, or zero when the stream is closed.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Writes stream data.
+            </summary>
+            <param name="buffer">The source buffer.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbStream.ReadExactlyAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Reads exactly the requested number of bytes unless the stream closes.
+            </summary>
+            <param name="buffer">The destination buffer.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <exception cref="T:System.IO.EndOfStreamException">The stream closed before enough bytes were read.</exception>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbStream.ReadToEndAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reads the stream until it closes.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The collected bytes.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbStream.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Adb.AdbSyncException">
+            <summary>
+            Represents an ADB file sync protocol or device-side filesystem failure.
+            </summary>
+            <param name="message">The failure message.</param>
+            <param name="remotePath">The remote path associated with the failure.</param>
+            <param name="deviceErrorCode">The device-side error code when reported.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.AdbSyncException.#ctor(System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Represents an ADB file sync protocol or device-side filesystem failure.
+            </summary>
+            <param name="message">The failure message.</param>
+            <param name="remotePath">The remote path associated with the failure.</param>
+            <param name="deviceErrorCode">The device-side error code when reported.</param>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbSyncException.RemotePath">
+            <summary>
+            Gets the remote path associated with the failure.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Adb.AdbSyncException.DeviceErrorCode">
+            <summary>
+            Gets the device-side error code when reported.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Adb.IAdbPairingBackend">
+            <summary>
+            Creates secure ADB pairing connections.
+            </summary>
+            <remarks>
+            Implementations are responsible for the ADB pairing TLS handshake, TLS keying-material export,
+            SPAKE2 message generation, and AES-GCM peer-info encryption.
+            </remarks>
+        </member>
+        <member name="M:AdbSharp.Adb.IAdbPairingBackend.ConnectAsync(System.IO.Stream,System.Security.Cryptography.X509Certificates.X509Certificate2,System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Opens a secure pairing connection over an already-connected transport stream.
+            </summary>
+            <param name="transport">The connected TCP transport stream.</param>
+            <param name="clientCertificate">The client certificate derived from the ADB host key.</param>
+            <param name="pairingCode">The pairing code entered by the user.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The secure pairing connection.</returns>
+        </member>
+        <member name="T:AdbSharp.Adb.IAdbPairingSecureConnection">
+            <summary>
+            Represents an authenticated secure channel for the ADB wireless pairing packet exchange.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Adb.IAdbPairingSecureConnection.CreateClientMessageAsync(System.Threading.CancellationToken)">
+            <summary>
+            Creates the local SPAKE2 pairing message.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The local SPAKE2 message.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.IAdbPairingSecureConnection.InitializeCipherAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Initializes peer-info encryption from the peer SPAKE2 message.
+            </summary>
+            <param name="peerMessage">The peer SPAKE2 message.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.IAdbPairingSecureConnection.EncryptAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Encrypts a pairing peer-info payload.
+            </summary>
+            <param name="plaintext">The plaintext payload.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The encrypted payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.IAdbPairingSecureConnection.DecryptAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Decrypts a pairing peer-info payload.
+            </summary>
+            <param name="ciphertext">The encrypted payload.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The decrypted payload.</returns>
+        </member>
+        <member name="M:AdbSharp.Adb.IAdbPairingSecureConnection.ReadExactlyAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Reads exactly the requested number of bytes from the secure transport.
+            </summary>
+            <param name="buffer">The destination buffer.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.IAdbPairingSecureConnection.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Writes bytes to the secure transport.
+            </summary>
+            <param name="buffer">The source buffer.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Adb.Internal.AdbPackageManagerOutput.InstallSessionRegex">
+            <remarks>
+            Pattern:<br/>
+            <code>Success:\s+created install session \[(?&lt;id&gt;\d+)\]</code><br/>
+            Options:<br/>
+            <code>RegexOptions.CultureInvariant</code><br/>
+            Explanation:<br/>
+            <code>
+            ○ Match the string "Success:".<br/>
+            ○ Match a whitespace character atomically at least once.<br/>
+            ○ Match the string "created install session [".<br/>
+            ○ "id" capture group.<br/>
+                ○ Match a Unicode digit atomically at least once.<br/>
+            ○ Match ']'.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.InstallSessionRegex_0">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the InstallSessionRegex method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if a possible match was found; false if no more matches are possible.</returns>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.InstallSessionRegex_0.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.Utilities">
+            <summary>Helper methods used by generated <see cref="T:System.Text.RegularExpressions.Regex"/>-derived implementations.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout">
+            <summary>Default timeout value set in <see cref="T:System.AppContext"/>, or <see cref="F:System.Text.RegularExpressions.Regex.InfiniteMatchTimeout"/> if none was set.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_hasTimeout">
+            <summary>Whether <see cref="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout"/> is non-infinite.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_indexOfString_A1A1458F79D6305D98C10991E58982D6AD3AA55F644AB59A81EAC0184E71B6F6">
+            <summary>Supports searching for the string "Success:".</summary>
+        </member>
+    </members>
+</doc>

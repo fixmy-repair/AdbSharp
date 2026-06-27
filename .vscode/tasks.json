@@ -1,0 +1,108 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "restore",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "restore",
+        "${workspaceFolder}/AdbSharp.sln"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/AdbSharp.sln",
+        "--no-restore",
+        "-warnaserror"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile",
+      "dependsOn": "restore"
+    },
+    {
+      "label": "build sample",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/samples/AdbSharp.Console/AdbSharp.Console.csproj",
+        "--no-restore",
+        "-warnaserror"
+      ],
+      "problemMatcher": "$msCompile",
+      "dependsOn": "restore"
+    },
+    {
+      "label": "run sample",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/samples/AdbSharp.Console/AdbSharp.Console.csproj",
+        "--no-restore"
+      ],
+      "group": "test",
+      "problemMatcher": "$msCompile",
+      "dependsOn": "restore"
+    },
+    {
+      "label": "test",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "test",
+        "${workspaceFolder}/AdbSharp.sln",
+        "--no-restore"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile",
+      "dependsOn": "restore"
+    },
+    {
+      "label": "hardware tests",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/AdbSharp.IntegrationTests/AdbSharp.IntegrationTests.csproj",
+        "--no-restore"
+      ],
+      "options": {
+        "env": {
+          "ADBSHARP_HARDWARE_TESTS": "1"
+        }
+      },
+      "problemMatcher": "$msCompile",
+      "dependsOn": "restore"
+    },
+    {
+      "label": "pack",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "pack",
+        "${workspaceFolder}/AdbSharp.sln",
+        "-c",
+        "Release",
+        "-warnaserror",
+        "-o",
+        "${workspaceFolder}/artifacts/packages"
+      ],
+      "problemMatcher": "$msCompile",
+      "dependsOn": "restore"
+    }
+  ]
+}

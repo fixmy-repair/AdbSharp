@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdbSharp</name>
+    </assembly>
+    <members>
+        <member name="T:AdbSharp.DeviceManager">
+            <summary>
+            Discovers Android devices using registered USB transports.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.DeviceManager.FindAsync(System.Threading.CancellationToken)">
+            <summary>
+            Finds attached Android devices.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The discovered devices.</returns>
+        </member>
+        <member name="T:AdbSharp.Discovery.DefaultTransportProvider">
+            <summary>
+            Registers the native platform USB providers included with the facade package.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Discovery.DefaultTransportProvider.RegisterBuiltInTransports">
+            <summary>
+            Registers built-in Windows, Linux, and macOS transport providers once.
+            </summary>
+        </member>
+    </members>
+</doc>
