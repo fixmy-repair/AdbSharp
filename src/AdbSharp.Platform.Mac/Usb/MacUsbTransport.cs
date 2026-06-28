@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using AdbSharp.Common.Devices;
 using AdbSharp.Platform.Mac.Usb.Native;
@@ -6,9 +7,11 @@ using AdbSharp.Transport.Usb;
 
 namespace AdbSharp.Platform.Mac.Usb;
 
-internal sealed class MacUsbTransport : IUsbTransport
+internal sealed class MacUsbTransport : IUsbTransport, IUsbTransportDiagnostics
 {
     private const int MaxRecoverableReadAttempts = 3;
+    private readonly IMacUsbInterfaceAdapter native;
+    private readonly bool startAsyncRunLoop;
     private IntPtr interfacePointer;
     private byte bulkInPipeReference;
     private byte bulkOutPipeReference;
@@ -23,10 +26,23 @@ internal sealed class MacUsbTransport : IUsbTransport
     private int pendingReadLength;
     private uint lastBulkInPipeStatusAfterWrite = uint.MaxValue;
     private uint lastBulkOutPipeStatusAfterWrite = uint.MaxValue;
-    private bool disposed;
+    private int closed;
+    private int resourcesDisposed;
 
     public MacUsbTransport(MacUsbTransportId id, UsbDeviceDescriptor descriptor, MacUsbLegacyOpenState state)
+        : this(id, descriptor, state, MacUsbInterfaceAdapter.Instance, startAsyncRunLoop: true)
     {
+    }
+
+    internal MacUsbTransport(
+        MacUsbTransportId id,
+        UsbDeviceDescriptor descriptor,
+        MacUsbLegacyOpenState state,
+        IMacUsbInterfaceAdapter nativeAdapter,
+        bool startAsyncRunLoop)
+    {
+        native = nativeAdapter;
+        this.startAsyncRunLoop = startAsyncRunLoop;
         Id = id;
         Descriptor = descriptor;
         ApplyState(state);
@@ -51,7 +67,7 @@ internal sealed class MacUsbTransport : IUsbTransport
 
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        ObjectDisposedException.ThrowIf(disposed, this);
+        ObjectDisposedException.ThrowIf(IsClosed, this);
         if (buffer.Length == 0)
         {
             return 0;
@@ -92,6 +108,7 @@ internal sealed class MacUsbTransport : IUsbTransport
                 if (!IsRecoverableReadError(exception.Error) || recoverableAttempts >= MaxRecoverableReadAttempts)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    await AbortAsync(CancellationToken.None).ConfigureAwait(false);
                     throw exception;
                 }
 
@@ -115,8 +132,8 @@ internal sealed class MacUsbTransport : IUsbTransport
                 }
                 else
                 {
-                    _ = MacUsbInterface.ClearPipeStall(interfacePointer, bulkInPipeReference);
-                    _ = MacUsbInterface.AbortPipe(interfacePointer, bulkInPipeReference);
+                    _ = native.ClearPipeStall(interfacePointer, bulkInPipeReference);
+                    _ = native.AbortPipe(interfacePointer, bulkInPipeReference);
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -137,7 +154,7 @@ internal sealed class MacUsbTransport : IUsbTransport
 
     public async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        ObjectDisposedException.ThrowIf(disposed, this);
+        ObjectDisposedException.ThrowIf(IsClosed, this);
         await WriteGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         if (buffer.Length == 0)
         {
@@ -165,7 +182,7 @@ internal sealed class MacUsbTransport : IUsbTransport
             }
 
             using var cancellationRegistration = RegisterAbort(bulkOutPipeReference, cancellationToken);
-            var result = MacUsbInterface.WritePipe(
+            var result = native.WritePipe(
                 interfacePointer,
                 bulkOutPipeReference,
                 nativeBuffer,
@@ -182,7 +199,9 @@ internal sealed class MacUsbTransport : IUsbTransport
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            throw MacUsbErrors.Create(result, $"write to macOS USB bulk pipe {bulkOutPipeReference} ({BulkOutEndpoint.Address:x2})");
+            var exception = MacUsbErrors.Create(result, $"write to macOS USB bulk pipe {bulkOutPipeReference} ({BulkOutEndpoint.Address:x2})");
+            await AbortAsync(CancellationToken.None).ConfigureAwait(false);
+            throw exception;
         }
         finally
         {
@@ -191,71 +210,54 @@ internal sealed class MacUsbTransport : IUsbTransport
         }
     }
 
-    public ValueTask DisposeAsync()
+    public ValueTask ResetAsync(CancellationToken cancellationToken = default)
     {
-        if (disposed)
-        {
-            return ValueTask.CompletedTask;
-        }
+        cancellationToken.ThrowIfCancellationRequested();
+        return AbortAsync(cancellationToken);
+    }
 
-        disposed = true;
-        CloseCurrentInterface();
-        if (pendingReadBuffer is not null)
-        {
-            ArrayPool<byte>.Shared.Return(pendingReadBuffer);
-            pendingReadBuffer = null;
-        }
-
-        ReadGate.Dispose();
-        WriteGate.Dispose();
+    public ValueTask AbortAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        AbortNativeResources();
         return ValueTask.CompletedTask;
     }
 
-    private async ValueTask<MacUsbAsyncTransferResult> ReadPipeAsync(byte pipeReference, IntPtr nativeBuffer, uint transferLength, CancellationToken cancellationToken)
+    public ValueTask DisposeAsync()
     {
-        var completion = new TaskCompletionSource<MacUsbAsyncTransferResult>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var handle = GCHandle.Alloc(completion);
-        try
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            using var cancellationRegistration = RegisterAbort(pipeReference, cancellationToken);
-            unsafe
-            {
-                var result = MacUsbInterface.ReadPipeAsyncTo(
-                    interfacePointer,
-                    pipeReference,
-                    nativeBuffer,
-                    transferLength,
-                    MacNative.TransferNoDataTimeoutMilliseconds,
-                    MacNative.TransferCompletionTimeoutMilliseconds,
-                    &CompleteAsyncTransfer,
-                    GCHandle.ToIntPtr(handle));
-
-                if (result != MacNative.Success)
-                {
-                    return new MacUsbAsyncTransferResult(result, 0);
-                }
-            }
-
-            return await completion.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
-        }
-        finally
-        {
-            if (handle.IsAllocated)
-            {
-                handle.Free();
-            }
-        }
+        AbortNativeResources();
+        DisposeManagedResources();
+        return ValueTask.CompletedTask;
     }
 
-    [UnmanagedCallersOnly]
-    private static void CompleteAsyncTransfer(IntPtr refcon, uint result, IntPtr bytesTransferred)
+    public UsbTransportDiagnosticSnapshot GetDiagnosticSnapshot()
     {
-        var handle = GCHandle.FromIntPtr(refcon);
-        if (handle.Target is TaskCompletionSource<MacUsbAsyncTransferResult> completion)
-        {
-            completion.TrySetResult(new MacUsbAsyncTransferResult(result, (nuint)bytesTransferred));
-        }
+        return new UsbTransportDiagnosticSnapshot(
+            "IOUSBLib",
+            Descriptor.TransportId,
+            BulkInEndpoint.Address,
+            BulkInEndpoint.MaxPacketSize,
+            BulkOutEndpoint.Address,
+            BulkOutEndpoint.MaxPacketSize,
+            !IsClosed,
+            IsClosed ? "closed" : "open",
+            new Dictionary<string, string>
+            {
+                ["interfaceRevision"] = usbInterfaceRevision,
+                ["openMode"] = usbOpenMode,
+                ["bulkInPipeReference"] = bulkInPipeReference.ToString(CultureInfo.InvariantCulture),
+                ["bulkOutPipeReference"] = bulkOutPipeReference.ToString(CultureInfo.InvariantCulture),
+                ["bulkInPipeStatusAtOpen"] = $"0x{bulkInPipeStatusAtOpen:x8}",
+                ["bulkOutPipeStatusAtOpen"] = $"0x{bulkOutPipeStatusAtOpen:x8}",
+                ["lastBulkInPipeStatusAfterWrite"] = $"0x{lastBulkInPipeStatusAfterWrite:x8}",
+                ["lastBulkOutPipeStatusAfterWrite"] = $"0x{lastBulkOutPipeStatusAfterWrite:x8}",
+                ["asyncRunLoop"] = asyncRunLoop == IntPtr.Zero ? string.Empty : $"0x{asyncRunLoop.ToInt64():x}"
+            });
+    }
+
+    private ValueTask<MacUsbAsyncTransferResult> ReadPipeAsync(byte pipeReference, IntPtr nativeBuffer, uint transferLength, CancellationToken cancellationToken)
+    {
+        return native.ReadPipeAsyncTo(interfacePointer, pipeReference, nativeBuffer, transferLength, cancellationToken);
     }
 
     private CancellationTokenRegistration RegisterAbort(byte pipeReference, CancellationToken cancellationToken)
@@ -264,9 +266,9 @@ internal sealed class MacUsbTransport : IUsbTransport
         return cancellationToken.CanBeCanceled
             ? cancellationToken.Register(static state =>
             {
-                var (interfacePointer, pipe) = ((IntPtr InterfacePointer, byte Pipe))state!;
-                _ = MacUsbInterface.AbortPipe(interfacePointer, pipe);
-            }, (pointer, pipeReference))
+                var (native, interfacePointer, pipe) = ((IMacUsbInterfaceAdapter Native, IntPtr InterfacePointer, byte Pipe))state!;
+                _ = native.AbortPipe(interfacePointer, pipe);
+            }, (native, pointer, pipeReference))
             : default;
     }
 
@@ -286,11 +288,11 @@ internal sealed class MacUsbTransport : IUsbTransport
         return pipeReference != 0 && pipeReference != bulkInPipeReference;
     }
 
-    private static uint GetPipeStatus(IntPtr interfacePointer, byte pipeReference)
+    private uint GetPipeStatus(IntPtr interfacePointer, byte pipeReference)
     {
         try
         {
-            return MacUsbInterface.GetPipeStatus(interfacePointer, pipeReference);
+            return native.GetPipeStatus(interfacePointer, pipeReference);
         }
         catch (UsbTransportException)
         {
@@ -309,7 +311,7 @@ internal sealed class MacUsbTransport : IUsbTransport
         uint pipeStatus;
         try
         {
-            pipeStatus = MacUsbInterface.GetPipeStatus(interfacePointer, bulkInPipeReference);
+            pipeStatus = native.GetPipeStatus(interfacePointer, bulkInPipeReference);
         }
         catch (UsbTransportException)
         {
@@ -364,7 +366,45 @@ internal sealed class MacUsbTransport : IUsbTransport
         usbOpenMode = state.UsbOpenMode;
         bulkInPipeStatusAtOpen = GetPipeStatus(interfacePointer, bulkInPipeReference);
         bulkOutPipeStatusAtOpen = GetPipeStatus(interfacePointer, bulkOutPipeReference);
-        StartAsyncRunLoop();
+        if (startAsyncRunLoop)
+        {
+            StartAsyncRunLoop();
+        }
+    }
+
+    private bool IsClosed => Volatile.Read(ref closed) != 0;
+
+    private void AbortNativeResources()
+    {
+        if (Interlocked.Exchange(ref closed, 1) != 0)
+        {
+            return;
+        }
+
+        if (interfacePointer != IntPtr.Zero)
+        {
+            _ = native.AbortPipe(interfacePointer, bulkInPipeReference);
+            _ = native.AbortPipe(interfacePointer, bulkOutPipeReference);
+        }
+
+        CloseCurrentInterface();
+    }
+
+    private void DisposeManagedResources()
+    {
+        if (Interlocked.Exchange(ref resourcesDisposed, 1) != 0)
+        {
+            return;
+        }
+
+        if (pendingReadBuffer is not null)
+        {
+            ArrayPool<byte>.Shared.Return(pendingReadBuffer);
+            pendingReadBuffer = null;
+        }
+
+        ReadGate.Dispose();
+        WriteGate.Dispose();
     }
 
     private void CloseCurrentInterface()
@@ -375,8 +415,8 @@ internal sealed class MacUsbTransport : IUsbTransport
         }
 
         StopAsyncRunLoop();
-        _ = MacUsbInterface.Close(interfacePointer);
-        _ = MacUsbInterface.Release(interfacePointer);
+        _ = native.Close(interfacePointer);
+        _ = native.Release(interfacePointer);
         interfacePointer = IntPtr.Zero;
     }
 
@@ -424,7 +464,7 @@ internal sealed class MacUsbTransport : IUsbTransport
         var source = IntPtr.Zero;
         try
         {
-            var result = MacUsbInterface.CreateInterfaceAsyncEventSource(pointer, out source);
+            var result = native.CreateInterfaceAsyncEventSource(pointer, out source);
             if (result != MacNative.Success)
             {
                 ready.TrySetResult(result);
@@ -452,7 +492,7 @@ internal sealed class MacUsbTransport : IUsbTransport
 
     private void WriteZeroLengthPacket(CancellationToken cancellationToken)
     {
-        var result = MacUsbInterface.WritePipe(
+        var result = native.WritePipe(
             interfacePointer,
             bulkOutPipeReference,
             [],
@@ -464,6 +504,7 @@ internal sealed class MacUsbTransport : IUsbTransport
         }
 
         cancellationToken.ThrowIfCancellationRequested();
+        AbortNativeResources();
         throw MacUsbErrors.Create(result, $"write zero-length packet to macOS USB bulk pipe {bulkOutPipeReference} ({BulkOutEndpoint.Address:x2})");
     }
 
@@ -511,6 +552,4 @@ internal sealed class MacUsbTransport : IUsbTransport
 
         return bytesRead;
     }
-
-    private readonly record struct MacUsbAsyncTransferResult(uint Status, nuint BytesTransferred);
 }

@@ -143,14 +143,17 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
             && ReadAncestorUShortProperty(interfaceService, "idProduct") == id.ProductId;
     }
 
-    private static unsafe bool IsHostInterfaceService(uint service)
+    private static bool IsHostInterfaceService(uint service)
     {
         Span<byte> className = stackalloc byte[128];
-        fixed (byte* classNamePointer = className)
+        unsafe
         {
-            if (MacNative.IOObjectGetClass(service, classNamePointer) != MacNative.Success)
+            fixed (byte* classNamePointer = className)
             {
-                return false;
+                if (MacNative.IOObjectGetClass(service, classNamePointer) != MacNative.Success)
+                {
+                    return false;
+                }
             }
         }
 

@@ -1297,6 +1297,7 @@
       "AdbSharp.Authentication >= 0.1.0",
       "AdbSharp.Fastboot >= 0.1.0",
       "AdbSharp.Fastbootd >= 0.1.0",
+      "AdbSharp.Platform.Linux >= 0.1.0",
       "AdbSharp.Platform.Mac >= 0.1.0",
       "AdbSharp.Platform.Windows >= 0.1.0",
       "AdbSharp.Protocol >= 0.1.0",
@@ -1344,6 +1345,9 @@
             },
             "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj": {
               "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj"
+            },
+            "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/AdbSharp.Platform.Linux.csproj": {
+              "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/AdbSharp.Platform.Linux.csproj"
             },
             "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj": {
               "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj"

@@ -25,3 +25,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Adb/obj/Release/net11.0/AdbSharp.Adb.xml
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Adb/obj/Release/net11.0/AdbSharp.Adb.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Adb/obj/Release/net11.0/ref/AdbSharp.Adb.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Adb/obj/Release/net11.0/AdbSharp.Adb.sourcelink.json

@@ -19,3 +19,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/obj/Release/net11.0/AdbSharp.Platform.Linux.xml
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/obj/Release/net11.0/AdbSharp.Platform.Linux.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/obj/Release/net11.0/ref/AdbSharp.Platform.Linux.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/obj/Release/net11.0/AdbSharp.Platform.Linux.sourcelink.json

@@ -156,5 +156,8 @@ internal static partial class LibUsbNative
     public static partial int libusb_set_interface_alt_setting(IntPtr handle, int interfaceNumber, int alternateSetting);
 
     [LibraryImport("libusb-1.0")]
+    public static partial int libusb_reset_device(IntPtr handle);
+
+    [LibraryImport("libusb-1.0")]
     public static partial int libusb_bulk_transfer(IntPtr handle, byte endpoint, byte[] data, int length, out int transferred, uint timeout);
 }

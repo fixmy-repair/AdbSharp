@@ -28,6 +28,7 @@ internal static partial class WindowsUsbNative
     public const int ErrorSemTimeout = 121;
     public const int ErrorBusy = 170;
     public const int ErrorOperationAborted = 995;
+    public const int ErrorIoPending = 997;
     public const int ErrorDeviceNotConnected = 1167;
     public static readonly IntPtr InvalidHandleValue = new(-1);
 
@@ -94,6 +95,14 @@ internal static partial class WindowsUsbNative
         uint flagsAndAttributes,
         IntPtr templateFile);
 
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool CancelIoEx(SafeFileHandle fileHandle, IntPtr overlapped);
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool GetOverlappedResult(SafeFileHandle fileHandle, IntPtr overlapped, out int bytesTransferred, [MarshalAs(UnmanagedType.Bool)] bool wait);
+
     [LibraryImport("winusb.dll", EntryPoint = "WinUsb_Initialize", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool WinUsbInitialize(SafeFileHandle deviceHandle, out IntPtr interfaceHandle);
@@ -116,9 +125,9 @@ internal static partial class WindowsUsbNative
 
     [LibraryImport("winusb.dll", EntryPoint = "WinUsb_ReadPipe", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool WinUsbReadPipe(IntPtr interfaceHandle, byte pipeId, [Out] byte[] buffer, int bufferLength, out int lengthTransferred, IntPtr overlapped);
+    public static partial bool WinUsbReadPipe(IntPtr interfaceHandle, byte pipeId, IntPtr buffer, int bufferLength, IntPtr lengthTransferred, IntPtr overlapped);
 
     [LibraryImport("winusb.dll", EntryPoint = "WinUsb_WritePipe", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool WinUsbWritePipe(IntPtr interfaceHandle, byte pipeId, byte[] buffer, int bufferLength, out int lengthTransferred, IntPtr overlapped);
+    public static partial bool WinUsbWritePipe(IntPtr interfaceHandle, byte pipeId, IntPtr buffer, int bufferLength, IntPtr lengthTransferred, IntPtr overlapped);
 }

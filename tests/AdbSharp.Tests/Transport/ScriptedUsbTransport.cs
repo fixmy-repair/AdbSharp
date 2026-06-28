@@ -12,6 +12,7 @@ internal sealed class ScriptedUsbTransport(
 {
     private readonly Channel<byte> readable = Channel.CreateUnbounded<byte>();
     private byte[]? pendingAdbHeader;
+    private bool aborted;
 
     public string PlatformName => "Scripted";
 
@@ -25,13 +26,23 @@ internal sealed class ScriptedUsbTransport(
 
     public Action<byte[]>? OnWrite { get; set; }
 
+    public bool CoalesceAdbWrites { get; set; } = true;
+
+    public int ReadCount { get; private set; }
+
     public bool Disposed { get; private set; }
+
+    public int ResetCount { get; private set; }
+
+    public int AbortCount { get; private set; }
 
     public bool CanOpen(UsbDeviceDescriptor descriptor) => descriptor.TransportId == Descriptor.TransportId;
 
     public ValueTask<IUsbTransport> OpenAsync(UsbDeviceDescriptor descriptor, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        ObjectDisposedException.ThrowIf(aborted, this);
+        Disposed = false;
         return ValueTask.FromResult<IUsbTransport>(this);
     }
 
@@ -45,6 +56,7 @@ internal sealed class ScriptedUsbTransport(
 
     public async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
+        ObjectDisposedException.ThrowIf(aborted, this);
         cancellationToken.ThrowIfCancellationRequested();
         if (!await readable.Reader.WaitToReadAsync(cancellationToken))
         {
@@ -58,14 +70,16 @@ internal sealed class ScriptedUsbTransport(
             count++;
         }
 
+        ReadCount++;
         return count;
     }
 
     public ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
+        ObjectDisposedException.ThrowIf(aborted, this);
         cancellationToken.ThrowIfCancellationRequested();
         var bytes = buffer.ToArray();
-        if (TryCoalesceAdbWrite(bytes))
+        if (CoalesceAdbWrites && TryCoalesceAdbWrite(bytes))
         {
             return ValueTask.CompletedTask;
         }
@@ -113,6 +127,28 @@ internal sealed class ScriptedUsbTransport(
     public ValueTask DisposeAsync()
     {
         Disposed = true;
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask ResetAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ResetCount++;
+        return AbortAsync(cancellationToken);
+    }
+
+    public ValueTask AbortAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (aborted)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        AbortCount++;
+        aborted = true;
+        Disposed = true;
+        readable.Writer.TryComplete();
         return ValueTask.CompletedTask;
     }
 }

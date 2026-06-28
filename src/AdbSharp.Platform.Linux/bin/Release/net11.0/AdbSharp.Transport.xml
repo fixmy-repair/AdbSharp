@@ -83,6 +83,29 @@
             <param name="buffer">The source buffer.</param>
             <param name="cancellationToken">A cancellation token.</param>
         </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbTransport.ResetAsync(System.Threading.CancellationToken)">
+            <summary>
+            Requests a USB-level reset for the opened transport.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbTransport.AbortAsync(System.Threading.CancellationToken)">
+            <summary>
+            Aborts pending I/O and invalidates this transport.
+            </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.IUsbTransportDiagnostics">
+            <summary>
+            Provides structured diagnostics for an opened USB transport.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbTransportDiagnostics.GetDiagnosticSnapshot">
+            <summary>
+            Gets a snapshot of transport diagnostics.
+            </summary>
+            <returns>The diagnostic snapshot.</returns>
+        </member>
         <member name="T:AdbSharp.Transport.Usb.IUsbTransportFactory">
             <summary>
             Opens USB transports for descriptors produced by a matching enumerator.
@@ -212,6 +235,61 @@
         </member>
         <member name="P:AdbSharp.Transport.Usb.UsbEndpoint.MaxPacketSize">
             <summary>The endpoint max packet size.</summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot">
+            <summary>
+            Structured diagnostics for an opened USB transport.
+            </summary>
+            <param name="Backend">The backend implementation name.</param>
+            <param name="TransportId">The platform transport id.</param>
+            <param name="BulkInEndpointAddress">The bulk input endpoint address.</param>
+            <param name="BulkInMaxPacketSize">The bulk input endpoint max packet size.</param>
+            <param name="BulkOutEndpointAddress">The bulk output endpoint address.</param>
+            <param name="BulkOutMaxPacketSize">The bulk output endpoint max packet size.</param>
+            <param name="IsOpen">True when the transport is currently open.</param>
+            <param name="State">A backend-specific state summary.</param>
+            <param name="Properties">Additional backend-specific diagnostic properties.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.#ctor(System.String,System.String,System.Byte,System.UInt16,System.Byte,System.UInt16,System.Boolean,System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">
+            <summary>
+            Structured diagnostics for an opened USB transport.
+            </summary>
+            <param name="Backend">The backend implementation name.</param>
+            <param name="TransportId">The platform transport id.</param>
+            <param name="BulkInEndpointAddress">The bulk input endpoint address.</param>
+            <param name="BulkInMaxPacketSize">The bulk input endpoint max packet size.</param>
+            <param name="BulkOutEndpointAddress">The bulk output endpoint address.</param>
+            <param name="BulkOutMaxPacketSize">The bulk output endpoint max packet size.</param>
+            <param name="IsOpen">True when the transport is currently open.</param>
+            <param name="State">A backend-specific state summary.</param>
+            <param name="Properties">Additional backend-specific diagnostic properties.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.Backend">
+            <summary>The backend implementation name.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.TransportId">
+            <summary>The platform transport id.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.BulkInEndpointAddress">
+            <summary>The bulk input endpoint address.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.BulkInMaxPacketSize">
+            <summary>The bulk input endpoint max packet size.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.BulkOutEndpointAddress">
+            <summary>The bulk output endpoint address.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.BulkOutMaxPacketSize">
+            <summary>The bulk output endpoint max packet size.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.IsOpen">
+            <summary>True when the transport is currently open.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.State">
+            <summary>A backend-specific state summary.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbTransportDiagnosticSnapshot.Properties">
+            <summary>Additional backend-specific diagnostic properties.</summary>
         </member>
         <member name="T:AdbSharp.Transport.Usb.UsbTransportError">
             <summary>

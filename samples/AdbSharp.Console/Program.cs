@@ -7,7 +7,6 @@ using AdbSharp.Discovery;
 using AdbSharp.Fastboot;
 using AdbSharp.Fastbootd;
 using AdbSharp.Transport.Usb;
-using System.Reflection;
 using System.Text.Json;
 
 if (args.Length == 2 && string.Equals(args[0], "pairing-compat", StringComparison.OrdinalIgnoreCase))
@@ -52,9 +51,21 @@ if (args.Length == 1 && string.Equals(args[0], "usb-open-diagnostics", StringCom
             Console.WriteLine($"open\t{transport.GetType().FullName}");
             Console.WriteLine($"bulk-in\t0x{transport.BulkInEndpoint.Address:x2}\t{transport.BulkInEndpoint.MaxPacketSize}");
             Console.WriteLine($"bulk-out\t0x{transport.BulkOutEndpoint.Address:x2}\t{transport.BulkOutEndpoint.MaxPacketSize}");
-            foreach (var (name, value) in DiagnosticsReflection.ReadPrivateFields(transport))
+            if (transport is IUsbTransportDiagnostics transportDiagnostics)
             {
-                Console.WriteLine($"field\t{name}={value}");
+                var snapshot = transportDiagnostics.GetDiagnosticSnapshot();
+                Console.WriteLine($"diagnostics\t{snapshot.Backend}\t{snapshot.State}\topen={snapshot.IsOpen}");
+                Console.WriteLine($"diagnostics-id\t{snapshot.TransportId}");
+                Console.WriteLine($"diagnostics-in\t0x{snapshot.BulkInEndpointAddress:x2}\t{snapshot.BulkInMaxPacketSize}");
+                Console.WriteLine($"diagnostics-out\t0x{snapshot.BulkOutEndpointAddress:x2}\t{snapshot.BulkOutMaxPacketSize}");
+                foreach (var pair in snapshot.Properties.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
+                {
+                    Console.WriteLine($"diagnostics-property\t{pair.Key}={pair.Value}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("diagnostics-unavailable");
             }
         }
         catch (Exception ex)
@@ -589,14 +600,4 @@ file static class SampleJson
     {
         WriteIndented = true
     };
-}
-
-file static class DiagnosticsReflection
-{
-    public static IEnumerable<(string Name, object? Value)> ReadPrivateFields(object instance)
-    {
-        return instance.GetType()
-            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-            .Select(field => (field.Name, field.GetValue(instance)));
-    }
 }

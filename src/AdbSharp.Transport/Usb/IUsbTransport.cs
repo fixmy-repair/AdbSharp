@@ -36,4 +36,16 @@ public interface IUsbTransport : IAsyncDisposable
     /// <param name="buffer">The source buffer.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Requests a USB-level reset for the opened transport.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    ValueTask ResetAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Aborts pending I/O and invalidates this transport.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    ValueTask AbortAsync(CancellationToken cancellationToken = default);
 }

@@ -3945,6 +3945,9 @@
               "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj": {
                 "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj"
               },
+              "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/AdbSharp.Platform.Linux.csproj": {
+                "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Linux/AdbSharp.Platform.Linux.csproj"
+              },
               "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj": {
                 "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj"
               },

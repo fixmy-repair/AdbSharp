@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/fixmy/AdbSharp</projectUrl>
     <description>Native managed .NET implementation of Android Platform Tools protocols.</description>
     <tags>android adb fastboot fastbootd usb</tags>
-    <repository type="git" url="https://github.com/fixmy/AdbSharp" />
+    <repository type="git" url="https://github.com/fixmy/AdbSharp" commit="b4b95bfd37c4576574087d38599995912c986f69" />
     <dependencies>
       <group targetFramework="net11.0">
         <dependency id="AdbSharp.Common" version="0.1.0" exclude="Build,Analyzers" />
@@ -28,7 +28,9 @@
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Examples.md" target="docs/Examples.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Fastboot.md" target="docs/Fastboot.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Fastbootd.md" target="docs/Fastbootd.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/HardwareValidation.md" target="docs/HardwareValidation.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/NOTICE.md" target="docs/NOTICE.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/PlatformSetup.md" target="docs/PlatformSetup.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/USBSourceParity.md" target="docs/USBSourceParity.md" />
   </files>
 </package>

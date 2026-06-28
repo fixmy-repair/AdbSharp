@@ -19,3 +19,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/obj/Release/net11.0/AdbSharp.Platform.Mac.xml
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/obj/Release/net11.0/AdbSharp.Platform.Mac.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/obj/Release/net11.0/ref/AdbSharp.Platform.Mac.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/obj/Release/net11.0/AdbSharp.Platform.Mac.sourcelink.json

@@ -22,3 +22,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastboot/obj/Release/net11.0/AdbSharp.Fastboot.xml
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastboot/obj/Release/net11.0/AdbSharp.Fastboot.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastboot/obj/Release/net11.0/ref/AdbSharp.Fastboot.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastboot/obj/Release/net11.0/AdbSharp.Fastboot.sourcelink.json

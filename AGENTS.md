@@ -94,6 +94,8 @@ Maintain:
 - `docs/Authentication.md`
 - `docs/Examples.md`
 - `docs/PlatformSetup.md`
+- `docs/HardwareValidation.md`
+- `docs/USBSourceParity.md`
 - `docs/NOTICE.md`
 
 ## Roadmap

@@ -16,3 +16,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Transport/obj/Release/net11.0/AdbSharp.Transport.xml
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Transport/obj/Release/net11.0/AdbSharp.Transport.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Transport/obj/Release/net11.0/ref/AdbSharp.Transport.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Transport/obj/Release/net11.0/AdbSharp.Transport.sourcelink.json

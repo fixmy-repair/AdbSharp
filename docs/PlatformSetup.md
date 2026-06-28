@@ -40,6 +40,9 @@ ADBSHARP_HARDWARE_TESTS=1 dotnet test tests/AdbSharp.IntegrationTests/AdbSharp.I
 
 The hardware tests cover safe paths only: discovery, opened-transport endpoint validation, ADB `getprop`, a small `/data/local/tmp` push/pull roundtrip, Fastboot `getvar:product`, and Fastbootd `getvar:is-userspace` when matching devices are attached.
 
+See `docs/HardwareValidation.md` for host-specific validation commands and
+known vendor/driver notes.
+
 For host setup troubleshooting, use diagnostic discovery instead of the fail-fast device manager:
 
 ```csharp

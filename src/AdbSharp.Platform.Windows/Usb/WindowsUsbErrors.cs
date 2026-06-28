@@ -10,6 +10,11 @@ internal static class WindowsUsbErrors
     public static UsbTransportException Create(string message)
     {
         var errorCode = Marshal.GetLastPInvokeError();
+        return Create(errorCode, message);
+    }
+
+    public static UsbTransportException Create(int errorCode, string message)
+    {
         return new UsbTransportException(Map(errorCode), $"{message} Win32 error {errorCode}.", new Win32Exception(errorCode));
     }
 

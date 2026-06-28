@@ -150,6 +150,33 @@ public sealed class HardwareDiscoveryTests
         Assert.Equal(device.Usb.TransportId, transport.Descriptor.TransportId);
     }
 
+    [Fact]
+    public async Task Open_abort_rediscover_open_when_device_is_attached()
+    {
+        if (!HardwareTestsEnabled())
+        {
+            return;
+        }
+
+        using var timeout = CreateTimeout();
+        var device = await FindDeviceAsync(static device => device.Mode is DeviceMode.Adb or DeviceMode.Fastboot or DeviceMode.Fastbootd or DeviceMode.Bootloader, timeout.Token);
+        if (device is null)
+        {
+            return;
+        }
+
+        var factory = UsbTransportRegistry.FindFactory(device.Usb);
+        await using (var transport = await factory.OpenAsync(device.Usb, timeout.Token))
+        {
+            await transport.AbortAsync(timeout.Token);
+        }
+
+        var rediscovered = await FindDeviceAsync(candidate => candidate.Usb.TransportId == device.Usb.TransportId, timeout.Token);
+        Assert.NotNull(rediscovered);
+        await using var reopened = await factory.OpenAsync(rediscovered.Usb, timeout.Token);
+        UsbTransportValidator.ValidateOpenedTransport(reopened);
+    }
+
     private static bool HardwareTestsEnabled()
     {
         return string.Equals(Environment.GetEnvironmentVariable("ADBSHARP_HARDWARE_TESTS"), "1", StringComparison.Ordinal);
