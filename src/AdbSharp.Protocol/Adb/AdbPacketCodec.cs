@@ -66,8 +66,9 @@ public static class AdbPacketCodec
     /// Reads a complete packet from a contiguous buffer.
     /// </summary>
     /// <param name="source">The encoded packet bytes.</param>
+    /// <param name="allowZeroChecksum">True when the peer negotiated checksum skipping.</param>
     /// <returns>The decoded packet.</returns>
-    public static AdbPacket Read(ReadOnlySpan<byte> source)
+    public static AdbPacket Read(ReadOnlySpan<byte> source, bool allowZeroChecksum = false)
     {
         var header = AdbPacketHeader.Read(source);
         var totalLength = checked(AdbConstants.HeaderLength + (int)header.PayloadLength);
@@ -76,7 +77,7 @@ public static class AdbPacketCodec
             throw new ArgumentException("Source is too small for the encoded ADB packet.", nameof(source));
         }
 
-        return new AdbPacket(header, source.Slice(AdbConstants.HeaderLength, (int)header.PayloadLength).ToArray());
+        return AdbPacket.FromWire(header, source.Slice(AdbConstants.HeaderLength, (int)header.PayloadLength).ToArray(), allowZeroChecksum);
     }
 
     /// <summary>

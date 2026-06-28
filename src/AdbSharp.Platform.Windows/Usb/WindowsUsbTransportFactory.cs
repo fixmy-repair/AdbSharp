@@ -158,7 +158,7 @@ public sealed partial class WindowsUsbTransportFactory : IUsbDeviceEnumerator, I
             WindowsUsbNative.FileShareRead | WindowsUsbNative.FileShareWrite,
             IntPtr.Zero,
             WindowsUsbNative.OpenExisting,
-            WindowsUsbNative.FileAttributeNormal,
+            WindowsUsbNative.FileAttributeNormal | WindowsUsbNative.FileFlagOverlapped,
             IntPtr.Zero);
 
         if (deviceHandle.IsInvalid)

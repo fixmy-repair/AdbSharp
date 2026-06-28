@@ -7,6 +7,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +29,8 @@
     <ProjectReference Include="..\..\src\AdbSharp.Protocol\AdbSharp.Protocol.csproj" />
     <ProjectReference Include="..\..\src\AdbSharp.Transport\AdbSharp.Transport.csproj" />
     <ProjectReference Include="..\..\src\AdbSharp.Authentication\AdbSharp.Authentication.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Platform.Mac\AdbSharp.Platform.Mac.csproj" />
+    <ProjectReference Include="..\..\src\AdbSharp.Platform.Windows\AdbSharp.Platform.Windows.csproj" />
   </ItemGroup>
 
 </Project>

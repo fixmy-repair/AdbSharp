@@ -1,4 +1,5 @@
 using AdbSharp.Common.Devices;
+using AdbSharp.Protocol.Adb;
 using AdbSharp.Transport.Usb;
 using System.Threading.Channels;
 
@@ -10,6 +11,7 @@ internal sealed class ScriptedUsbTransport(
     UsbEndpoint? bulkOutEndpoint = null) : IUsbTransport, IUsbTransportFactory
 {
     private readonly Channel<byte> readable = Channel.CreateUnbounded<byte>();
+    private byte[]? pendingAdbHeader;
 
     public string PlatformName => "Scripted";
 
@@ -63,9 +65,49 @@ internal sealed class ScriptedUsbTransport(
     {
         cancellationToken.ThrowIfCancellationRequested();
         var bytes = buffer.ToArray();
+        if (TryCoalesceAdbWrite(bytes))
+        {
+            return ValueTask.CompletedTask;
+        }
+
         Writes.Add(bytes);
         OnWrite?.Invoke(bytes);
         return ValueTask.CompletedTask;
+    }
+
+    private bool TryCoalesceAdbWrite(byte[] bytes)
+    {
+        if (pendingAdbHeader is not null)
+        {
+            var packet = new byte[pendingAdbHeader.Length + bytes.Length];
+            pendingAdbHeader.CopyTo(packet, 0);
+            bytes.CopyTo(packet, pendingAdbHeader.Length);
+            pendingAdbHeader = null;
+            Writes.Add(packet);
+            OnWrite?.Invoke(packet);
+            return true;
+        }
+
+        if (bytes.Length != AdbConstants.HeaderLength)
+        {
+            return false;
+        }
+
+        try
+        {
+            var header = AdbPacketHeader.Read(bytes);
+            if (header.PayloadLength == 0)
+            {
+                return false;
+            }
+
+            pendingAdbHeader = bytes;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public ValueTask DisposeAsync()

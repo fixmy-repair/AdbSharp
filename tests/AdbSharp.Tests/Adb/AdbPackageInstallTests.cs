@@ -122,7 +122,7 @@ public sealed class AdbPackageInstallTests
         uint nextRemoteId = 50;
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             switch (packet.Header.Command)
             {
                 case AdbCommand.Open:

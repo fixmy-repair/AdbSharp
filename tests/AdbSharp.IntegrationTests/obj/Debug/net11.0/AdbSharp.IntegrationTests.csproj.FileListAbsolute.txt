@@ -133,3 +133,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/tests/AdbSharp.IntegrationTests/bin/Debug/net11.0/K4os.Hash.xxHash.dll
 /Users/fixmy/Dev/apps/AdbSharp/tests/AdbSharp.IntegrationTests/bin/Debug/net11.0/ZstdSharp.dll
 /Users/fixmy/Dev/apps/AdbSharp/tests/AdbSharp.IntegrationTests/bin/Debug/net11.0/BouncyCastle.Cryptography.dll
+/Users/fixmy/Dev/apps/AdbSharp/tests/AdbSharp.IntegrationTests/obj/Debug/net11.0/AdbSharp.IntegrationTests.sourcelink.json

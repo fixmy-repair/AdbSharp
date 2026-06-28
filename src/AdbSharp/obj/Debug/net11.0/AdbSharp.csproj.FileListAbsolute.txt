@@ -43,3 +43,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp/obj/Debug/net11.0/refint/AdbSharp.dll
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp/obj/Debug/net11.0/AdbSharp.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp/obj/Debug/net11.0/ref/AdbSharp.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp/obj/Debug/net11.0/AdbSharp.sourcelink.json

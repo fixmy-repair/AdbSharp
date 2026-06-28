@@ -54,3 +54,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/samples/AdbSharp.Console/bin/Debug/net11.0/K4os.Hash.xxHash.dll
 /Users/fixmy/Dev/apps/AdbSharp/samples/AdbSharp.Console/bin/Debug/net11.0/ZstdSharp.dll
 /Users/fixmy/Dev/apps/AdbSharp/samples/AdbSharp.Console/bin/Debug/net11.0/BouncyCastle.Cryptography.dll
+/Users/fixmy/Dev/apps/AdbSharp/samples/AdbSharp.Console/obj/Debug/net11.0/AdbSharp.Console.sourcelink.json

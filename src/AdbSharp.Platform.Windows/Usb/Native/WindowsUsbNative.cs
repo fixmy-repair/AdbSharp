@@ -15,6 +15,7 @@ internal static partial class WindowsUsbNative
     public const uint FileShareWrite = 0x00000002;
     public const uint OpenExisting = 3;
     public const uint FileAttributeNormal = 0x00000080;
+    public const uint FileFlagOverlapped = 0x40000000;
     public const byte UsbEndpointDirectionMask = 0x80;
     public const int UsbdPipeTypeBulk = 2;
     public const uint PipeTransferTimeoutPolicy = 3;

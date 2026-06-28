@@ -13,6 +13,8 @@
           "AdbSharp.Authentication": "0.1.0",
           "AdbSharp.Fastboot": "0.1.0",
           "AdbSharp.Fastbootd": "0.1.0",
+          "AdbSharp.Platform.Mac": "0.1.0",
+          "AdbSharp.Platform.Windows": "0.1.0",
           "AdbSharp.Protocol": "0.1.0",
           "AdbSharp.Transport": "0.1.0",
           "Microsoft.NET.Test.Sdk": "17.14.1",

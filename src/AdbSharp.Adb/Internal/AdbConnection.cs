@@ -5,11 +5,13 @@ using System.Text;
 using AdbSharp.Authentication.Adb;
 using AdbSharp.Common;
 using AdbSharp.Protocol.Adb;
+using AdbSharp.Transport.Usb;
 
 namespace AdbSharp.Adb.Internal;
 
 internal sealed class AdbConnection(IAdbTransport transport, AdbClientOptions options) : IAsyncDisposable
 {
+    private const int MaxHandshakeTransportRetries = 3;
     private readonly SemaphoreSlim writeGate = new(1, 1);
     private readonly ConcurrentDictionary<uint, AdbStream> streams = new();
     private readonly CancellationTokenSource disposeCts = new();
@@ -34,67 +36,94 @@ internal sealed class AdbConnection(IAdbTransport transport, AdbClientOptions op
     public async ValueTask ConnectAsync(CancellationToken cancellationToken)
     {
         var connectPayload = Encoding.UTF8.GetBytes(Options.SystemIdentity);
-        await SendPacketAsync(AdbCommand.Connect, AdbConstants.Version, checked((uint)Options.MaxPayload), connectPayload, cancellationToken).ConfigureAwait(false);
-
         var signatureSent = false;
         var publicKeyOffered = false;
-        while (true)
+        using var handshakeReadCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var nextPacketTask = StartReadPacketTask(handshakeReadCts.Token);
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var packet = await ReadPacketAsync(cancellationToken).ConfigureAwait(false);
-            switch (packet.Header.Command)
+            await SendPacketAsync(AdbCommand.Connect, AdbConstants.Version, checked((uint)Options.MaxPayload), connectPayload, cancellationToken).ConfigureAwait(false);
+
+            var handshakeTransportRetries = 0;
+            while (true)
             {
-                case AdbCommand.Connect:
-                    DeviceVersion = packet.Header.Arg0;
-                    MaxPayload = checked((int)Math.Min(packet.Header.Arg1, (uint)Options.MaxPayload));
-                    ParseFeatures(packet.Payload.Span);
-                    readerTask = Task.Run(() => ReaderLoopAsync(disposeCts.Token), CancellationToken.None);
-                    return;
+                cancellationToken.ThrowIfCancellationRequested();
+                AdbPacket packet;
+                try
+                {
+                    packet = await nextPacketTask.ConfigureAwait(false);
+                }
+                catch (UsbTransportException ex) when (handshakeTransportRetries < MaxHandshakeTransportRetries && IsProtocolOperationRetryRequested(ex))
+                {
+                    handshakeTransportRetries++;
+                    nextPacketTask = StartReadPacketTask(handshakeReadCts.Token);
+                    await SendPacketAsync(AdbCommand.Connect, AdbConstants.Version, checked((uint)Options.MaxPayload), connectPayload, cancellationToken).ConfigureAwait(false);
+                    continue;
+                }
 
-                case AdbCommand.StartTls:
-                    await UpgradeToTlsAsync(packet, cancellationToken).ConfigureAwait(false);
-                    break;
+                switch (packet.Header.Command)
+                {
+                    case AdbCommand.Connect:
+                        DeviceVersion = packet.Header.Arg0;
+                        MaxPayload = checked((int)Math.Min(packet.Header.Arg1, (uint)Options.MaxPayload));
+                        ParseFeatures(packet.Payload.Span);
+                        readerTask = Task.Run(() => ReaderLoopAsync(disposeCts.Token), CancellationToken.None);
+                        return;
 
-                case AdbCommand.Auth when packet.Header.Arg0 == (uint)AdbAuthKind.Token:
-                    if (TlsActive)
-                    {
+                    case AdbCommand.StartTls:
+                        await UpgradeToTlsAsync(packet, cancellationToken).ConfigureAwait(false);
+                        nextPacketTask = StartReadPacketTask(handshakeReadCts.Token);
                         break;
-                    }
 
-                    if (Options.Authenticator is null)
-                    {
-                        throw new DeviceConnectionException("ADB device requires authorization. Configure AdbClientOptions.Authenticator with an ADB key store and accept the host key on the device.");
-                    }
-
-                    if (publicKeyOffered)
-                    {
-                        throw new DeviceConnectionException("ADB device rejected the offered public key. Confirm the authorization prompt on the device or provide a trusted ADB key.");
-                    }
-
-                    if (!signatureSent)
-                    {
-                        var signature = await Options.Authenticator.SignTokenAsync(packet.Payload, cancellationToken).ConfigureAwait(false);
-                        if (signature is not null)
+                    case AdbCommand.Auth when packet.Header.Arg0 == (uint)AdbAuthKind.Token:
+                        if (TlsActive)
                         {
-                            await SendPacketAsync(AdbCommand.Auth, (uint)AdbAuthKind.Signature, 0, signature, cancellationToken).ConfigureAwait(false);
-                            signatureSent = true;
+                            nextPacketTask = StartReadPacketTask(handshakeReadCts.Token);
                             break;
                         }
-                    }
 
-                    var publicKey = await Options.Authenticator.GetPublicKeyAsync(cancellationToken).ConfigureAwait(false);
-                    if (publicKey is null)
-                    {
-                        throw new DeviceConnectionException("ADB authenticator did not provide a public key.");
-                    }
+                        if (Options.Authenticator is null)
+                        {
+                            throw new DeviceConnectionException("ADB device requires authorization. Configure AdbClientOptions.Authenticator with an ADB key store and accept the host key on the device.");
+                        }
 
-                    await SendPacketAsync(AdbCommand.Auth, (uint)AdbAuthKind.PublicKey, 0, publicKey, cancellationToken).ConfigureAwait(false);
-                    publicKeyOffered = true;
-                    break;
+                        if (publicKeyOffered)
+                        {
+                            throw new DeviceConnectionException("ADB device rejected the offered public key. Confirm the authorization prompt on the device or provide a trusted ADB key.");
+                        }
 
-                default:
-                    throw new ProtocolException($"Unexpected ADB packet '{packet.Header.Command}' during connection.");
+                        if (!signatureSent)
+                        {
+                            var signature = await Options.Authenticator.SignTokenAsync(packet.Payload, cancellationToken).ConfigureAwait(false);
+                            if (signature is not null)
+                            {
+                                nextPacketTask = StartReadPacketTask(handshakeReadCts.Token);
+                                await SendPacketAsync(AdbCommand.Auth, (uint)AdbAuthKind.Signature, 0, signature, cancellationToken).ConfigureAwait(false);
+                                signatureSent = true;
+                                break;
+                            }
+                        }
+
+                        var publicKey = await Options.Authenticator.GetPublicKeyAsync(cancellationToken).ConfigureAwait(false);
+                        if (publicKey is null)
+                        {
+                            throw new DeviceConnectionException("ADB authenticator did not provide a public key.");
+                        }
+
+                        nextPacketTask = StartReadPacketTask(handshakeReadCts.Token);
+                        await SendPacketAsync(AdbCommand.Auth, (uint)AdbAuthKind.PublicKey, 0, publicKey, cancellationToken).ConfigureAwait(false);
+                        publicKeyOffered = true;
+                        break;
+
+                    default:
+                        throw new ProtocolException($"Unexpected ADB packet '{packet.Header.Command}' during connection.");
+                }
             }
+        }
+        catch
+        {
+            await handshakeReadCts.CancelAsync().ConfigureAwait(false);
+            throw;
         }
     }
 
@@ -278,7 +307,7 @@ internal sealed class AdbConnection(IAdbTransport transport, AdbClientOptions op
 
     private async ValueTask SendPacketAsync(AdbCommand command, uint arg0, uint arg1, ReadOnlyMemory<byte> payload, CancellationToken cancellationToken)
     {
-        var packet = AdbPacket.Create(command, arg0, arg1, payload);
+        var packet = AdbPacket.Create(command, arg0, arg1, payload, ShouldSkipChecksumForOutbound());
         var length = AdbPacketCodec.GetEncodedLength(packet);
         var rented = ArrayPool<byte>.Shared.Rent(length);
         try
@@ -322,7 +351,32 @@ internal sealed class AdbConnection(IAdbTransport transport, AdbClientOptions op
             await ReadExactAsync(payload, cancellationToken).ConfigureAwait(false);
         }
 
-        return new AdbPacket(header, payload);
+        return AdbPacket.FromWire(header, payload, ShouldAllowSkippedChecksum(header));
+    }
+
+    private Task<AdbPacket> StartReadPacketTask(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.Run(async () => await ReadPacketAsync(cancellationToken).ConfigureAwait(false), CancellationToken.None);
+    }
+
+    private static bool IsProtocolOperationRetryRequested(UsbTransportException exception)
+    {
+        return exception.Error == UsbTransportError.OperationAborted
+            && exception.Message.Contains("retry the protocol operation", StringComparison.Ordinal);
+    }
+
+    private bool ShouldAllowSkippedChecksum(AdbPacketHeader header)
+    {
+        return header.PayloadChecksum == 0
+            && (DeviceVersion >= AdbConstants.VersionSkipChecksum
+                || header.Command == AdbCommand.Auth
+                || (header.Command == AdbCommand.Connect && header.Arg0 >= AdbConstants.VersionSkipChecksum));
+    }
+
+    private bool ShouldSkipChecksumForOutbound()
+    {
+        return DeviceVersion >= AdbConstants.VersionSkipChecksum;
     }
 
     private async ValueTask ReadExactAsync(Memory<byte> buffer, CancellationToken cancellationToken)

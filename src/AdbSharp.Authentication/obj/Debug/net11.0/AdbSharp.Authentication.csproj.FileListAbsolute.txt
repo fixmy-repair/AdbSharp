@@ -16,3 +16,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Authentication/obj/Debug/net11.0/refint/AdbSharp.Authentication.dll
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Authentication/obj/Debug/net11.0/AdbSharp.Authentication.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Authentication/obj/Debug/net11.0/ref/AdbSharp.Authentication.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Authentication/obj/Debug/net11.0/AdbSharp.Authentication.sourcelink.json

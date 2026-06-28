@@ -1297,6 +1297,8 @@
       "AdbSharp.Authentication >= 0.1.0",
       "AdbSharp.Fastboot >= 0.1.0",
       "AdbSharp.Fastbootd >= 0.1.0",
+      "AdbSharp.Platform.Mac >= 0.1.0",
+      "AdbSharp.Platform.Windows >= 0.1.0",
       "AdbSharp.Protocol >= 0.1.0",
       "AdbSharp.Transport >= 0.1.0",
       "Microsoft.NET.Test.Sdk >= 17.14.1",
@@ -1342,6 +1344,12 @@
             },
             "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj": {
               "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj"
+            },
+            "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj": {
+              "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj"
+            },
+            "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/AdbSharp.Platform.Windows.csproj": {
+              "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/AdbSharp.Platform.Windows.csproj"
             },
             "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Protocol/AdbSharp.Protocol.csproj": {
               "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Protocol/AdbSharp.Protocol.csproj"

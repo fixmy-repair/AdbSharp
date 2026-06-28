@@ -16,6 +16,7 @@ namespace AdbSharp.Adb;
 public sealed class AdbClient : IAsyncDisposable
 {
     private const int DefaultTcpPort = 5555;
+    private const int MaxUsbConnectAttempts = 2;
     private const string StatV2Feature = "stat_v2";
     private const string ListV2Feature = "ls_v2";
     private const string SendReceiveV2Feature = "sendrecv_v2";
@@ -51,29 +52,39 @@ public sealed class AdbClient : IAsyncDisposable
         }
 
         options ??= new AdbClientOptions();
-        var factory = options.TransportFactory ?? UsbTransportRegistry.FindFactory(device.Usb);
-        var transport = await factory.OpenAsync(device.Usb, cancellationToken).ConfigureAwait(false);
-        try
+        for (var attempt = 1; attempt <= MaxUsbConnectAttempts; attempt++)
         {
-            UsbTransportValidator.ValidateOpenedTransport(transport);
-        }
-        catch
-        {
-            await transport.DisposeAsync().ConfigureAwait(false);
-            throw;
+            var factory = options.TransportFactory ?? UsbTransportRegistry.FindFactory(device.Usb);
+            var transport = await factory.OpenAsync(device.Usb, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                UsbTransportValidator.ValidateOpenedTransport(transport);
+            }
+            catch
+            {
+                await transport.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
+
+            var connection = new AdbConnection(new UsbAdbTransport(transport), options);
+            try
+            {
+                await connection.ConnectAsync(cancellationToken).ConfigureAwait(false);
+                return new AdbClient(device, connection);
+            }
+            catch (UsbTransportException ex) when (attempt < MaxUsbConnectAttempts && IsRecoverableUsbConnectFailure(ex))
+            {
+                await connection.DisposeAsync().ConfigureAwait(false);
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                await connection.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
         }
 
-        var connection = new AdbConnection(new UsbAdbTransport(transport), options);
-        try
-        {
-            await connection.ConnectAsync(cancellationToken).ConfigureAwait(false);
-            return new AdbClient(device, connection);
-        }
-        catch
-        {
-            await connection.DisposeAsync().ConfigureAwait(false);
-            throw;
-        }
+        throw new DeviceConnectionException("ADB USB connection failed after retrying a recoverable transport failure.");
     }
 
     /// <summary>
@@ -118,6 +129,13 @@ public sealed class AdbClient : IAsyncDisposable
     public static ValueTask<AdbClient> ConnectWirelessAsync(string host, int port = DefaultTcpPort, AdbClientOptions? options = null, CancellationToken cancellationToken = default)
     {
         return ConnectTcpAsync(host, port, options, cancellationToken);
+    }
+
+    private static bool IsRecoverableUsbConnectFailure(UsbTransportException exception)
+    {
+        return OperatingSystem.IsMacOS()
+            && exception.Error == UsbTransportError.OperationAborted
+            && exception.Message.Contains("macOS USB interface", StringComparison.Ordinal);
     }
 
     /// <summary>

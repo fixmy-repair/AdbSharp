@@ -3945,6 +3945,12 @@
               "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj": {
                 "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Fastbootd/AdbSharp.Fastbootd.csproj"
               },
+              "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj": {
+                "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Mac/AdbSharp.Platform.Mac.csproj"
+              },
+              "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/AdbSharp.Platform.Windows.csproj": {
+                "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/AdbSharp.Platform.Windows.csproj"
+              },
               "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Protocol/AdbSharp.Protocol.csproj": {
                 "projectPath": "/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Protocol/AdbSharp.Protocol.csproj"
               },

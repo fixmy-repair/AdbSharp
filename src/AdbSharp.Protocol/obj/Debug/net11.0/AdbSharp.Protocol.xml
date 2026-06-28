@@ -99,6 +99,11 @@
             Current ADB protocol version.
             </summary>
         </member>
+        <member name="F:AdbSharp.Protocol.Adb.AdbConstants.VersionSkipChecksum">
+            <summary>
+            Protocol version where peers may omit payload checksums by sending zero.
+            </summary>
+        </member>
         <member name="F:AdbSharp.Protocol.Adb.AdbConstants.StartTlsVersionMin">
             <summary>
             Minimum stream TLS version.
@@ -141,6 +146,26 @@
             <param name="payload">The payload.</param>
             <returns>The packet.</returns>
         </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacket.Create(AdbSharp.Protocol.Adb.AdbCommand,System.UInt32,System.UInt32,System.ReadOnlyMemory{System.Byte},System.Boolean)">
+            <summary>
+            Creates a packet with a generated header.
+            </summary>
+            <param name="command">The command.</param>
+            <param name="arg0">The first command argument.</param>
+            <param name="arg1">The second command argument.</param>
+            <param name="payload">The payload.</param>
+            <param name="skipChecksum">True to encode a zero payload checksum for peers that negotiated checksum skipping.</param>
+            <returns>The packet.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacket.FromWire(AdbSharp.Protocol.Adb.AdbPacketHeader,System.ReadOnlyMemory{System.Byte},System.Boolean)">
+            <summary>
+            Creates a packet from wire data while applying the negotiated checksum mode.
+            </summary>
+            <param name="header">The parsed wire header.</param>
+            <param name="payload">The parsed wire payload.</param>
+            <param name="allowZeroChecksum">True when the peer negotiated checksum skipping.</param>
+            <returns>The packet.</returns>
+        </member>
         <member name="T:AdbSharp.Protocol.Adb.AdbPacketCodec">
             <summary>
             Encodes and decodes ADB packets.
@@ -175,11 +200,12 @@
             <param name="destination">The destination buffer.</param>
             <returns>The number of bytes written.</returns>
         </member>
-        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.Read(System.ReadOnlySpan{System.Byte})">
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.Read(System.ReadOnlySpan{System.Byte},System.Boolean)">
             <summary>
             Reads a complete packet from a contiguous buffer.
             </summary>
             <param name="source">The encoded packet bytes.</param>
+            <param name="allowZeroChecksum">True when the peer negotiated checksum skipping.</param>
             <returns>The decoded packet.</returns>
         </member>
         <member name="M:AdbSharp.Protocol.Adb.AdbPacketCodec.WriteUInt32LittleEndian(System.Span{System.Byte},System.UInt32)">
@@ -237,6 +263,17 @@
             <param name="arg0">The first command argument.</param>
             <param name="arg1">The second command argument.</param>
             <param name="payload">The packet payload.</param>
+            <returns>A packet header.</returns>
+        </member>
+        <member name="M:AdbSharp.Protocol.Adb.AdbPacketHeader.Create(AdbSharp.Protocol.Adb.AdbCommand,System.UInt32,System.UInt32,System.ReadOnlySpan{System.Byte},System.Boolean)">
+            <summary>
+            Creates a validated header for a command and payload.
+            </summary>
+            <param name="command">The packet command.</param>
+            <param name="arg0">The first command argument.</param>
+            <param name="arg1">The second command argument.</param>
+            <param name="payload">The packet payload.</param>
+            <param name="skipChecksum">True to encode a zero payload checksum for peers that negotiated checksum skipping.</param>
             <returns>A packet header.</returns>
         </member>
         <member name="M:AdbSharp.Protocol.Adb.AdbPacketHeader.Write(System.Span{System.Byte})">

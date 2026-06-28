@@ -25,7 +25,7 @@ public sealed class AdbClientTests
         transport.EnqueueRead(Encode(AdbPacket.Create(AdbCommand.Connect, AdbConstants.Version, AdbConstants.MaxPayload, Encoding.UTF8.GetBytes("device::features=shell_v2"))));
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             if (packet.Header.Command != AdbCommand.Open)
             {
                 return;
@@ -56,7 +56,7 @@ public sealed class AdbClientTests
         var transport = CreateConnectedTransport(descriptor);
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             if (packet.Header.Command != AdbCommand.Open)
             {
                 return;
@@ -100,7 +100,7 @@ public sealed class AdbClientTests
         var writePayloads = new List<string>();
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             switch (packet.Header.Command)
             {
                 case AdbCommand.Open when GetService(packet) == "shell:cat":
@@ -138,7 +138,7 @@ public sealed class AdbClientTests
         var transport = CreateConnectedTransport(descriptor);
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             if (packet.Header.Command != AdbCommand.Open || GetService(packet) != "shell:logcat -d")
             {
                 return;
@@ -168,7 +168,7 @@ public sealed class AdbClientTests
         var transport = CreateConnectedTransport(descriptor);
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             if (packet.Header.Command != AdbCommand.Open)
             {
                 return;
@@ -195,7 +195,7 @@ public sealed class AdbClientTests
         var transport = CreateConnectedTransport(descriptor);
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             if (packet.Header.Command != AdbCommand.Open || GetService(packet) != "shell:pm list packages com.example")
             {
                 return;
@@ -475,7 +475,7 @@ public sealed class AdbClientTests
         uint localId = 0;
         transport.OnWrite = bytes =>
         {
-            var packet = AdbPacketCodec.Read(bytes);
+            var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
             switch (packet.Header.Command)
             {
                 case AdbCommand.Open when GetService(packet) == "sync:":
@@ -505,7 +505,7 @@ public sealed class AdbClientTests
 
     private static string GetPacketService(byte[] bytes)
     {
-        var packet = AdbPacketCodec.Read(bytes);
+        var packet = AdbPacketCodec.Read(bytes, allowZeroChecksum: true);
         return packet.Header.Command == AdbCommand.Open ? GetService(packet) : string.Empty;
     }
 

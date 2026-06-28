@@ -10,7 +10,22 @@ namespace AdbSharp.Platform.Mac.Usb;
 /// </summary>
 public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransportFactory
 {
-    private static readonly string[] InterfaceServiceNames = ["IOUSBHostInterface", "IOUSBInterface"];
+    private const byte UsbEndpointPropertiesVersion3 = 3;
+    private const string UseUsbHostFallbackEnvironmentVariable = "ADBSHARP_MAC_USB_USE_IOUSBHOST";
+    private const string ClearEndpointsEnvironmentVariable = "ADBSHARP_MAC_USB_CLEAR_ENDPOINTS";
+    private const string AdbClearEndpointsEnvironmentVariable = "ADB_OSX_USB_CLEAR_ENDPOINTS";
+    private static readonly string[] LegacyFirstInterfaceServiceNames = ["IOUSBInterface", "IOUSBHostInterface"];
+    private static readonly string[] HostFirstInterfaceServiceNames = ["IOUSBHostInterface", "IOUSBInterface"];
+    private static readonly MacUsbInterfaceQuery[] InterfaceQueries =
+    [
+        new("IOUSBInterfaceInterface942", MacNative.CreateUsbInterfaceInterfaceId942),
+        new("IOUSBInterfaceInterface800", MacNative.CreateUsbInterfaceInterfaceId800),
+        new("IOUSBInterfaceInterface700", MacNative.CreateUsbInterfaceInterfaceId700),
+        new("IOUSBInterfaceInterface650", MacNative.CreateUsbInterfaceInterfaceId650),
+        new("IOUSBInterfaceInterface550", MacNative.CreateUsbInterfaceInterfaceId550),
+        new("IOUSBInterfaceInterface500", MacNative.CreateUsbInterfaceInterfaceId500),
+        new("IOUSBInterfaceInterface183", MacNative.CreateUsbInterfaceInterfaceId183)
+    ];
 
     /// <inheritdoc />
     public string PlatformName => "macOS";
@@ -24,13 +39,16 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
             return ValueTask.FromResult<IReadOnlyList<UsbDeviceDescriptor>>([]);
         }
 
-        var devices = Enumerate("IOUSBHostInterface", cancellationToken);
-        if (devices.Count == 0)
+        foreach (var serviceName in GetInterfaceServiceNames())
         {
-            devices = Enumerate("IOUSBInterface", cancellationToken);
+            var devices = Enumerate(serviceName, cancellationToken);
+            if (devices.Count != 0)
+            {
+                return ValueTask.FromResult<IReadOnlyList<UsbDeviceDescriptor>>(devices);
+            }
         }
 
-        return ValueTask.FromResult<IReadOnlyList<UsbDeviceDescriptor>>(devices);
+        return ValueTask.FromResult<IReadOnlyList<UsbDeviceDescriptor>>([]);
     }
 
     /// <inheritdoc />
@@ -61,7 +79,7 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
     private static IUsbTransport Open(UsbDeviceDescriptor descriptor, MacUsbTransportId id, CancellationToken cancellationToken)
     {
         UsbTransportException? openFailure = null;
-        foreach (var serviceName in InterfaceServiceNames)
+        foreach (var serviceName in GetInterfaceServiceNames())
         {
             var matching = MacNative.IOServiceMatching(serviceName);
             if (matching == IntPtr.Zero)
@@ -125,14 +143,171 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
             && ReadAncestorUShortProperty(interfaceService, "idProduct") == id.ProductId;
     }
 
+    private static bool IsHostInterfaceService(uint service)
+    {
+        Span<byte> className = stackalloc byte[128];
+        fixed (byte* classNamePointer = className)
+        {
+            if (MacNative.IOObjectGetClass(service, classNamePointer) != MacNative.Success)
+            {
+                return false;
+            }
+        }
+
+        var terminator = className.IndexOf((byte)0);
+        var name = Encoding.ASCII.GetString(className[..(terminator >= 0 ? terminator : className.Length)]);
+        return string.Equals(name, "IOUSBHostInterface", StringComparison.Ordinal);
+    }
+
     private static IUsbTransport OpenService(uint service, UsbDeviceDescriptor descriptor, MacUsbTransportId id)
     {
-        var interfacePointer = CreateUsbInterface(service);
+        if (!IsHostInterfaceService(service))
+        {
+            return OpenLegacyService(service, descriptor, id);
+        }
+
+        return ShouldUseUsbHostFallback()
+            ? OpenHostServiceOrLegacyFallback(service, descriptor, id)
+            : OpenLegacyService(service, descriptor, id);
+    }
+
+    private static IUsbTransport OpenHostServiceOrLegacyFallback(uint service, UsbDeviceDescriptor descriptor, MacUsbTransportId id)
+    {
+        try
+        {
+            return OpenHostService(service, descriptor);
+        }
+        catch (UsbTransportException)
+        {
+            return OpenLegacyService(service, descriptor, id);
+        }
+    }
+
+    private static IUsbTransport OpenHostService(uint service, UsbDeviceDescriptor descriptor)
+    {
+        var interfaceObject = MacObjC.CreateUsbHostInterface(service, out var error);
+        if (interfaceObject == IntPtr.Zero)
+        {
+            throw MacObjC.CreateException(error, "open macOS IOUSBHost interface");
+        }
+
+        IntPtr bulkInPipe = IntPtr.Zero;
+        IntPtr bulkOutPipe = IntPtr.Zero;
+        try
+        {
+            if (!MacUsbHostDescriptors.TryReadBulkEndpoints(interfaceObject, out var bulkIn, out var bulkOut))
+            {
+                throw new UsbTransportException("The selected macOS IOUSBHost interface does not expose bulk IN and OUT endpoints.");
+            }
+
+            bulkInPipe = MacObjC.CopyPipeWithAddress(interfaceObject, bulkIn.Address, out error);
+            if (bulkInPipe == IntPtr.Zero)
+            {
+                throw MacObjC.CreateException(error, $"open macOS IOUSBHost bulk endpoint {bulkIn.Address:x2}");
+            }
+
+            bulkOutPipe = MacObjC.CopyPipeWithAddress(interfaceObject, bulkOut.Address, out error);
+            if (bulkOutPipe == IntPtr.Zero)
+            {
+                throw MacObjC.CreateException(error, $"open macOS IOUSBHost bulk endpoint {bulkOut.Address:x2}");
+            }
+
+            return new MacUsbHostTransport(interfaceObject, bulkInPipe, bulkOutPipe, descriptor, bulkIn, bulkOut);
+        }
+        catch
+        {
+            MacObjC.Release(bulkInPipe);
+            MacObjC.Release(bulkOutPipe);
+            MacObjC.Destroy(interfaceObject);
+            MacObjC.Release(interfaceObject);
+            throw;
+        }
+    }
+
+    private static IUsbTransport OpenLegacyService(uint service, UsbDeviceDescriptor descriptor, MacUsbTransportId id)
+    {
+        var state = OpenLegacyInterface(service, id);
+        try
+        {
+            return new MacUsbTransport(id, descriptor, state);
+        }
+        catch
+        {
+            state.Dispose();
+            throw;
+        }
+    }
+
+    internal static MacUsbLegacyOpenState OpenLegacyInterface(MacUsbTransportId id, CancellationToken cancellationToken)
+    {
+        UsbTransportException? openFailure = null;
+        foreach (var serviceName in LegacyFirstInterfaceServiceNames)
+        {
+            var matching = MacNative.IOServiceMatching(serviceName);
+            if (matching == IntPtr.Zero)
+            {
+                continue;
+            }
+
+            var result = MacNative.IOServiceGetMatchingServices(IntPtr.Zero, matching, out var iterator);
+            if (result != MacNative.Success)
+            {
+                continue;
+            }
+
+            try
+            {
+                while (true)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var service = MacNative.IOIteratorNext(iterator);
+                    if (service == 0)
+                    {
+                        break;
+                    }
+
+                    try
+                    {
+                        if (!Matches(service, id))
+                        {
+                            continue;
+                        }
+
+                        try
+                        {
+                            return OpenLegacyInterface(service, id);
+                        }
+                        catch (UsbTransportException ex)
+                        {
+                            openFailure = ex;
+                        }
+                    }
+                    finally
+                    {
+                        _ = MacNative.IOObjectRelease(service);
+                    }
+                }
+            }
+            finally
+            {
+                _ = MacNative.IOObjectRelease(iterator);
+            }
+        }
+
+        throw openFailure ?? new UsbTransportException($"macOS USB device '{id.Encode()}' was not found during interface recovery.");
+    }
+
+    internal static MacUsbLegacyOpenState OpenLegacyInterface(uint service, MacUsbTransportId id)
+    {
+        var interfacePointer = IntPtr.Zero;
         var opened = false;
         try
         {
+            var interfaceSelection = CreateUsbInterface(service);
+            interfacePointer = interfaceSelection.Pointer;
             EnsureAndroidInterface(interfacePointer, id);
-            Ensure(MacUsbInterface.Open(interfacePointer), "open macOS USB interface");
+            var openMode = string.Empty;
+            Ensure(OpenInterface(service, id, ref interfaceSelection, ref interfacePointer, ref openMode), "open macOS USB interface");
             opened = true;
 
             if (!TryGetBulkPipes(interfacePointer, out var bulkInPipe, out var bulkIn, out var bulkOutPipe, out var bulkOut))
@@ -140,7 +315,9 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
                 throw new UsbTransportException("The selected macOS USB interface does not expose bulk IN and OUT pipes.");
             }
 
-            return new MacUsbTransport(interfacePointer, descriptor, bulkIn, bulkOut, bulkInPipe, bulkOutPipe);
+            var state = new MacUsbLegacyOpenState(interfacePointer, bulkIn, bulkOut, bulkInPipe, bulkOutPipe, interfaceSelection.Name, openMode);
+            interfacePointer = IntPtr.Zero;
+            return state;
         }
         catch
         {
@@ -149,12 +326,59 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
                 _ = MacUsbInterface.Close(interfacePointer);
             }
 
-            _ = MacUsbInterface.Release(interfacePointer);
+            if (interfacePointer != IntPtr.Zero)
+            {
+                _ = MacUsbInterface.Release(interfacePointer);
+            }
+
             throw;
         }
     }
 
-    private static IntPtr CreateUsbInterface(uint service)
+    private static uint OpenInterface(
+        uint service,
+        MacUsbTransportId id,
+        ref MacUsbInterfaceSelection selection,
+        ref IntPtr interfacePointer,
+        ref string openMode)
+    {
+        var result = MacUsbInterface.Open(interfacePointer);
+        if (result != MacNative.IoReturnExclusiveAccess)
+        {
+            if (result == MacNative.Success)
+            {
+                openMode = "USBInterfaceOpen";
+            }
+
+            return result;
+        }
+
+        result = MacUsbInterface.OpenSeize(interfacePointer);
+        if (result != MacNative.IoReturnExclusiveAccess)
+        {
+            if (result == MacNative.Success)
+            {
+                openMode = "USBInterfaceOpenSeize";
+            }
+
+            return result;
+        }
+
+        _ = MacUsbInterface.Release(interfacePointer);
+        interfacePointer = IntPtr.Zero;
+        selection = CreateUsbInterface(service);
+        interfacePointer = selection.Pointer;
+        EnsureAndroidInterface(interfacePointer, id);
+        result = MacUsbInterface.OpenSeize(interfacePointer);
+        if (result == MacNative.Success)
+        {
+            openMode = "USBInterfaceOpenSeizeAfterRecreate";
+        }
+
+        return result;
+    }
+
+    private static MacUsbInterfaceSelection CreateUsbInterface(uint service)
     {
         var pluginType = MacNative.CreateUsbInterfaceUserClientTypeId();
         var interfaceType = MacNative.CreateCfPluginInterfaceId();
@@ -166,19 +390,29 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
 
         try
         {
-            var interfaceId = MacNative.CFUUIDGetUUIDBytes(MacNative.CreateUsbInterfaceInterfaceId182());
-            var queryResult = MacUsbInterface.QueryInterface(pluginInterface, interfaceId, out var interfacePointer);
-            if (queryResult != 0 || interfacePointer == IntPtr.Zero)
+            foreach (var query in InterfaceQueries)
             {
-                throw new UsbTransportException(UsbTransportError.Unknown, $"IOKit QueryInterface for IOUSBInterfaceInterface182 failed with HRESULT 0x{queryResult:x8}.");
+                var interfacePointer = QueryUsbInterface(pluginInterface, query);
+                if (interfacePointer != IntPtr.Zero)
+                {
+                    return new MacUsbInterfaceSelection(interfacePointer, query.Name);
+                }
             }
 
-            return interfacePointer;
+            throw new UsbTransportException("IOKit QueryInterface for supported macOS USB interface revisions failed.");
         }
         finally
         {
-            _ = MacNative.IODestroyPlugInInterface(pluginInterface);
+            _ = MacUsbInterface.Release(pluginInterface);
         }
+    }
+
+    private static IntPtr QueryUsbInterface(IntPtr pluginInterface, MacUsbInterfaceQuery query)
+    {
+        var interfaceId = query.CreateId();
+        var uuidBytes = MacNative.CFUUIDGetUUIDBytes(interfaceId);
+        var queryResult = MacUsbInterface.QueryInterface(pluginInterface, uuidBytes, out var interfacePointer);
+        return queryResult == 0 ? interfacePointer : IntPtr.Zero;
     }
 
     private static void EnsureAndroidInterface(IntPtr interfacePointer, MacUsbTransportId id)
@@ -204,6 +438,68 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
     }
 
     private static bool TryGetBulkPipes(
+        IntPtr interfacePointer,
+        out byte bulkInPipe,
+        out UsbEndpoint bulkIn,
+        out byte bulkOutPipe,
+        out UsbEndpoint bulkOut)
+    {
+        try
+        {
+            if (TryGetBulkPipesV3(interfacePointer, out bulkInPipe, out bulkIn, out bulkOutPipe, out bulkOut))
+            {
+                return true;
+            }
+        }
+        catch (UsbTransportException)
+        {
+        }
+
+        return TryGetBulkPipesLegacy(interfacePointer, out bulkInPipe, out bulkIn, out bulkOutPipe, out bulkOut);
+    }
+
+    private static bool TryGetBulkPipesV3(
+        IntPtr interfacePointer,
+        out byte bulkInPipe,
+        out UsbEndpoint bulkIn,
+        out byte bulkOutPipe,
+        out UsbEndpoint bulkOut)
+    {
+        bulkInPipe = 0;
+        bulkIn = default!;
+        bulkOutPipe = 0;
+        bulkOut = default!;
+
+        Ensure(MacUsbInterface.GetNumEndpoints(interfacePointer, out var endpointCount), "read macOS USB endpoint count");
+        for (byte pipeReference = 1; pipeReference <= endpointCount; pipeReference++)
+        {
+            var properties = new MacUsbEndpointProperties { Version = UsbEndpointPropertiesVersion3 };
+            Ensure(MacUsbInterface.GetPipePropertiesV3(interfacePointer, pipeReference, ref properties), "read macOS USB pipe properties");
+            Ensure(MacUsbInterface.GetEndpointPropertiesV3(interfacePointer, ref properties), "read macOS USB endpoint properties");
+
+            if (properties.TransferType != MacNative.UsbTransferTypeBulk)
+            {
+                continue;
+            }
+
+            if (properties.Direction == MacNative.UsbDirectionIn)
+            {
+                bulkInPipe = pipeReference;
+                bulkIn = new UsbEndpoint((byte)(MacNative.UsbEndpointInMask | properties.EndpointNumber), UsbEndpointDirection.In, UsbTransferKind.Bulk, properties.MaxPacketSize);
+                TryClearPipeStallBothEnds(interfacePointer, pipeReference);
+            }
+            else if (properties.Direction == MacNative.UsbDirectionOut)
+            {
+                bulkOutPipe = pipeReference;
+                bulkOut = new UsbEndpoint(properties.EndpointNumber, UsbEndpointDirection.Out, UsbTransferKind.Bulk, properties.MaxPacketSize);
+                TryClearPipeStallBothEnds(interfacePointer, pipeReference);
+            }
+        }
+
+        return bulkIn is not null && bulkOut is not null;
+    }
+
+    private static bool TryGetBulkPipesLegacy(
         IntPtr interfacePointer,
         out byte bulkInPipe,
         out UsbEndpoint bulkIn,
@@ -237,6 +533,40 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
         }
 
         return bulkIn is not null && bulkOut is not null;
+    }
+
+    private static void TryClearPipeStallBothEnds(IntPtr interfacePointer, byte pipeReference)
+    {
+        if (!ShouldClearPipeStallBothEnds())
+        {
+            return;
+        }
+
+        try
+        {
+            _ = MacUsbInterface.ClearPipeStallBothEnds(interfacePointer, pipeReference);
+        }
+        catch (UsbTransportException)
+        {
+        }
+    }
+
+    private static bool ShouldClearPipeStallBothEnds()
+    {
+        return string.Equals(Environment.GetEnvironmentVariable(ClearEndpointsEnvironmentVariable), "1", StringComparison.Ordinal)
+            || string.Equals(Environment.GetEnvironmentVariable(AdbClearEndpointsEnvironmentVariable), "1", StringComparison.Ordinal);
+    }
+
+    private static bool ShouldUseUsbHostFallback()
+    {
+        return string.Equals(Environment.GetEnvironmentVariable(UseUsbHostFallbackEnvironmentVariable), "1", StringComparison.Ordinal);
+    }
+
+    private static IReadOnlyList<string> GetInterfaceServiceNames()
+    {
+        return ShouldUseUsbHostFallback()
+            ? HostFirstInterfaceServiceNames
+            : LegacyFirstInterfaceServiceNames;
     }
 
     private static List<UsbDeviceDescriptor> Enumerate(string serviceName, CancellationToken cancellationToken)
@@ -479,5 +809,30 @@ public sealed class MacUsbTransportFactory : IUsbDeviceEnumerator, IUsbTransport
         {
             throw MacUsbErrors.Create(result, operation);
         }
+    }
+
+    private sealed record MacUsbInterfaceQuery(string Name, Func<IntPtr> CreateId);
+
+    private readonly record struct MacUsbInterfaceSelection(IntPtr Pointer, string Name);
+}
+
+internal readonly record struct MacUsbLegacyOpenState(
+    IntPtr InterfacePointer,
+    UsbEndpoint BulkInEndpoint,
+    UsbEndpoint BulkOutEndpoint,
+    byte BulkInPipeReference,
+    byte BulkOutPipeReference,
+    string UsbInterfaceRevision,
+    string UsbOpenMode)
+{
+    public void Dispose()
+    {
+        if (InterfacePointer == IntPtr.Zero)
+        {
+            return;
+        }
+
+        _ = MacUsbInterface.Close(InterfacePointer);
+        _ = MacUsbInterface.Release(InterfacePointer);
     }
 }

@@ -30,12 +30,26 @@ public readonly record struct AdbPacketHeader(
     /// <returns>A packet header.</returns>
     public static AdbPacketHeader Create(AdbCommand command, uint arg0, uint arg1, ReadOnlySpan<byte> payload)
     {
+        return Create(command, arg0, arg1, payload, skipChecksum: false);
+    }
+
+    /// <summary>
+    /// Creates a validated header for a command and payload.
+    /// </summary>
+    /// <param name="command">The packet command.</param>
+    /// <param name="arg0">The first command argument.</param>
+    /// <param name="arg1">The second command argument.</param>
+    /// <param name="payload">The packet payload.</param>
+    /// <param name="skipChecksum">True to encode a zero payload checksum for peers that negotiated checksum skipping.</param>
+    /// <returns>A packet header.</returns>
+    public static AdbPacketHeader Create(AdbCommand command, uint arg0, uint arg1, ReadOnlySpan<byte> payload, bool skipChecksum)
+    {
         return new AdbPacketHeader(
             command,
             arg0,
             arg1,
             checked((uint)payload.Length),
-            AdbPacketCodec.ComputeChecksum(payload),
+            skipChecksum ? 0 : AdbPacketCodec.ComputeChecksum(payload),
             AdbPacketCodec.ComputeMagic(command));
     }
 

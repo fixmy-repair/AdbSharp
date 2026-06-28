@@ -1,11 +1,13 @@
 using AdbSharp;
 using AdbSharp.Adb;
 using AdbSharp.Authentication.Adb;
+using AdbSharp.Common;
 using AdbSharp.Common.Devices;
 using AdbSharp.Discovery;
 using AdbSharp.Fastboot;
 using AdbSharp.Fastbootd;
 using AdbSharp.Transport.Usb;
+using System.Reflection;
 using System.Text.Json;
 
 if (args.Length == 2 && string.Equals(args[0], "pairing-compat", StringComparison.OrdinalIgnoreCase))
@@ -32,6 +34,33 @@ if (args.Length == 1 && string.Equals(args[0], "usb-diagnostics", StringComparis
     foreach (var issue in diagnostics.Issues)
     {
         Console.WriteLine($"issue\t{issue.EnumeratorName}\t{issue.Error}\t{issue.Message}");
+    }
+
+    return;
+}
+
+if (args.Length == 1 && string.Equals(args[0], "usb-open-diagnostics", StringComparison.OrdinalIgnoreCase))
+{
+    DefaultTransportProvider.RegisterBuiltInTransports();
+    foreach (var device in await UsbTransportRegistry.FindAsync())
+    {
+        Console.WriteLine($"device\t{device.TransportId}\t{device.VendorId:x4}:{device.ProductId:x4}\tinterface={device.InterfaceNumber}");
+        var factory = UsbTransportRegistry.FindFactory(device);
+        try
+        {
+            await using var transport = await factory.OpenAsync(device);
+            Console.WriteLine($"open\t{transport.GetType().FullName}");
+            Console.WriteLine($"bulk-in\t0x{transport.BulkInEndpoint.Address:x2}\t{transport.BulkInEndpoint.MaxPacketSize}");
+            Console.WriteLine($"bulk-out\t0x{transport.BulkOutEndpoint.Address:x2}\t{transport.BulkOutEndpoint.MaxPacketSize}");
+            foreach (var (name, value) in DiagnosticsReflection.ReadPrivateFields(transport))
+            {
+                Console.WriteLine($"field\t{name}={value}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"open-error\t{ex.GetType().FullName}\t{ex.Message}");
+        }
     }
 
     return;
@@ -79,8 +108,22 @@ if (args.Length >= 2 && string.Equals(args[0], "shell", StringComparison.Ordinal
         return;
     }
 
-    await using var client = await AdbClient.ConnectAsync(adbDevice);
-    Console.Write(await client.ShellAsync(command));
+    try
+    {
+        using var authenticator = await CreateDefaultAdbAuthenticatorAsync();
+        await using var client = await AdbClient.ConnectAsync(adbDevice, new AdbClientOptions { Authenticator = authenticator });
+        Console.Write(await client.ShellAsync(command));
+    }
+    catch (UsbTransportException ex)
+    {
+        Console.Error.WriteLine($"{ex.Error}: {ex.Message}");
+        Environment.ExitCode = 1;
+    }
+    catch (DeviceConnectionException ex)
+    {
+        Console.Error.WriteLine(ex.Message);
+        Environment.ExitCode = 1;
+    }
 }
 else if (args.Length >= 2 && string.Equals(args[0], "shell2", StringComparison.OrdinalIgnoreCase))
 {
@@ -546,4 +589,14 @@ file static class SampleJson
     {
         WriteIndented = true
     };
+}
+
+file static class DiagnosticsReflection
+{
+    public static IEnumerable<(string Name, object? Value)> ReadPrivateFields(object instance)
+    {
+        return instance.GetType()
+            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+            .Select(field => (field.Name, field.GetValue(instance)));
+    }
 }

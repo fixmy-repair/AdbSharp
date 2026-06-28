@@ -19,3 +19,4 @@
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/obj/Debug/net11.0/AdbSharp.Platform.Windows.xml
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/obj/Debug/net11.0/AdbSharp.Platform.Windows.pdb
 /Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/obj/Debug/net11.0/ref/AdbSharp.Platform.Windows.dll
+/Users/fixmy/Dev/apps/AdbSharp/src/AdbSharp.Platform.Windows/obj/Debug/net11.0/AdbSharp.Platform.Windows.sourcelink.json

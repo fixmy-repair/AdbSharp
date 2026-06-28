@@ -165,7 +165,7 @@ public sealed class AdbTcpClientTests
             await stream.ReadExactlyAsync(payload, cancellationToken).ConfigureAwait(false);
         }
 
-        return new AdbPacket(header, payload);
+        return AdbPacket.FromWire(header, payload, allowZeroChecksum: true);
     }
 
     private static ValueTask WritePacketAsync(Stream stream, AdbPacket packet, CancellationToken cancellationToken)

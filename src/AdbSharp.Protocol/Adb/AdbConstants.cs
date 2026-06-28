@@ -31,6 +31,11 @@ public static class AdbConstants
     public const uint Version = 0x01000001;
 
     /// <summary>
+    /// Protocol version where peers may omit payload checksums by sending zero.
+    /// </summary>
+    public const uint VersionSkipChecksum = 0x01000001;
+
+    /// <summary>
     /// Minimum stream TLS version.
     /// </summary>
     public const uint StartTlsVersionMin = 0x01000000;

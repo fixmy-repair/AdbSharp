@@ -18,11 +18,12 @@ internal static class MacUsbErrors
             MacNative.IoReturnNoDevice or MacNative.IoReturnNotAttached => UsbTransportError.DeviceDisconnected,
             MacNative.IoReturnNotFound => UsbTransportError.DeviceNotFound,
             MacNative.UsbReturnPipeStalled => UsbTransportError.EndpointStalled,
-            MacNative.IoReturnTimeout or MacNative.UsbReturnTransactionTimeout => UsbTransportError.Timeout,
+            MacNative.UsbReturnUnknownPipe => UsbTransportError.InvalidEndpoint,
+            MacNative.IoReturnTimeout or MacNative.IoReturnNotReady or MacNative.IoReturnNotResponding or MacNative.UsbReturnTransactionTimeout => UsbTransportError.Timeout,
             MacNative.IoReturnBusy => UsbTransportError.Busy,
             MacNative.IoReturnExclusiveAccess => UsbTransportError.ExclusiveAccess,
             MacNative.IoReturnAborted or MacNative.UsbReturnTransactionReturned => UsbTransportError.OperationAborted,
-            MacNative.IoReturnIoError or MacNative.IoReturnNotResponding => UsbTransportError.Io,
+            MacNative.IoReturnIoError => UsbTransportError.Io,
             _ => UsbTransportError.Unknown
         };
     }

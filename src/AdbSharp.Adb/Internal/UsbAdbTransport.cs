@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using AdbSharp.Protocol.Adb;
 using AdbSharp.Transport.Usb;
 
 namespace AdbSharp.Adb.Internal;
@@ -12,9 +13,16 @@ internal sealed class UsbAdbTransport(IUsbTransport transport) : IAdbTransport
         return transport.ReadAsync(buffer, cancellationToken);
     }
 
-    public ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+    public async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        return transport.WriteAsync(buffer, cancellationToken);
+        if (buffer.Length <= AdbConstants.HeaderLength)
+        {
+            await transport.WriteAsync(buffer, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        await transport.WriteAsync(buffer[..AdbConstants.HeaderLength], cancellationToken).ConfigureAwait(false);
+        await transport.WriteAsync(buffer[AdbConstants.HeaderLength..], cancellationToken).ConfigureAwait(false);
     }
 
     public ValueTask DisposeAsync()
