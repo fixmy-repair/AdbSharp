@@ -4,7 +4,7 @@ using AdbSharp.Transport.Usb;
 
 namespace AdbSharp.Platform.Mac.Usb;
 
-internal static class MacUsbHostDescriptors
+internal static unsafe class MacUsbHostDescriptors
 {
     private const byte ConfigurationDescriptorType = 2;
     private const byte InterfaceDescriptorType = 4;
