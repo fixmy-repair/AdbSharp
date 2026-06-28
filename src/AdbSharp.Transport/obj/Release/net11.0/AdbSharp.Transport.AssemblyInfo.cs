@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Native managed .NET implementation of Android Platform Tools protocols.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.0+b4b95bfd37c4576574087d38599995912c986f69")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.0+71f0446815169bf89e58ac19d638a8f4826e1cd4")]
 [assembly: System.Reflection.AssemblyProductAttribute("AdbSharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AdbSharp.Transport")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.1.0.0")]

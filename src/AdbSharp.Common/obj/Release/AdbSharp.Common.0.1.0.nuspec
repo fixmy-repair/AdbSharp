@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/fixmy/AdbSharp</projectUrl>
     <description>Native managed .NET implementation of Android Platform Tools protocols.</description>
     <tags>android adb fastboot fastbootd usb</tags>
-    <repository type="git" url="https://github.com/fixmy/AdbSharp" commit="b4b95bfd37c4576574087d38599995912c986f69" />
+    <repository type="git" url="https://github.com/fixmy/AdbSharp" commit="71f0446815169bf89e58ac19d638a8f4826e1cd4" />
     <dependencies>
       <group targetFramework="net11.0" />
     </dependencies>
