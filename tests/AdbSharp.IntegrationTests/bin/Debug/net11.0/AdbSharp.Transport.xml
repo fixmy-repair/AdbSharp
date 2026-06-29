@@ -48,6 +48,46 @@
             <param name="cancellationToken">A cancellation token.</param>
             <returns>The discovered descriptors.</returns>
         </member>
+        <member name="T:AdbSharp.Transport.Usb.IUsbDeviceLockOwnerReleaser">
+            <summary>
+            Releases host processes that are holding USB device interfaces.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbDeviceLockOwnerReleaser.ReleaseAsync(AdbSharp.Transport.Usb.UsbDeviceLockOwner,AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions,System.Threading.CancellationToken)">
+            <summary>
+            Attempts to release a detected lock owner.
+            </summary>
+            <param name="owner">The detected owner.</param>
+            <param name="options">Release options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The release result.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.IUsbDeviceLockOwnerResolver">
+            <summary>
+            Resolves host processes that may be holding a USB device interface open.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.IUsbDeviceLockOwnerResolver.PlatformName">
+            <summary>
+            Gets the host platform name handled by the resolver.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbDeviceLockOwnerResolver.CanResolve(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <summary>
+            Determines whether this resolver can inspect the specified USB descriptor.
+            </summary>
+            <param name="descriptor">The USB descriptor to inspect.</param>
+            <returns><see langword="true" /> when this resolver can inspect the descriptor.</returns>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.IUsbDeviceLockOwnerResolver.ResolveAsync(AdbSharp.Common.Devices.UsbDeviceDescriptor,AdbSharp.Transport.Usb.UsbTransportException,System.Threading.CancellationToken)">
+            <summary>
+            Resolves processes that may be holding the specified USB interface.
+            </summary>
+            <param name="descriptor">The USB descriptor to inspect.</param>
+            <param name="openFailure">The open failure that triggered resolution, when available.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The owner resolution result.</returns>
+        </member>
         <member name="T:AdbSharp.Transport.Usb.IUsbTransport">
             <summary>
             Represents an opened USB bulk transport for Android protocol traffic.
@@ -130,6 +170,393 @@
             <param name="descriptor">The descriptor to open.</param>
             <param name="cancellationToken">A cancellation token.</param>
             <returns>An opened USB transport.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockConflictException">
+            <summary>
+            Represents an open failure after opt-in USB lock owner handling was attempted.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockConflictException.#ctor(AdbSharp.Transport.Usb.UsbTransportError,System.String,AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution,System.Collections.Generic.IReadOnlyList{AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult},System.Exception)">
+            <summary>
+            Represents an open failure after opt-in USB lock owner handling was attempted.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictException.Resolution">
+            <summary>
+            Gets the owner resolution result.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictException.ReleaseResults">
+            <summary>
+            Gets release attempts performed before the failure.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockConflictHandler">
+            <summary>
+            Opens USB transports with optional lock owner conflict handling.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockConflictHandler.OpenAsync(AdbSharp.Transport.Usb.IUsbTransportFactory,AdbSharp.Common.Devices.UsbDeviceDescriptor,AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions,System.Threading.CancellationToken)">
+            <summary>
+            Opens a USB transport, optionally resolving and releasing lock owners when opening fails.
+            </summary>
+            <param name="factory">The USB transport factory.</param>
+            <param name="descriptor">The USB descriptor to open.</param>
+            <param name="options">Optional conflict handling options.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The opened transport.</returns>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockConflictHandler.IsLockLikeFailure(AdbSharp.Transport.Usb.UsbTransportException)">
+            <summary>
+            Determines whether a USB transport error commonly indicates another process owns the interface.
+            </summary>
+            <param name="exception">The USB transport exception.</param>
+            <returns><see langword="true" /> when the error is lock-like.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions">
+            <summary>
+            Opt-in behavior for USB open failures caused by device locks.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions.ResolveOwners">
+            <summary>
+            Gets or sets a value indicating whether owner resolution should run when opening fails with a lock-like error.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions.ReleaseAdbServer">
+            <summary>
+            Gets or sets a value indicating whether detected ADB server owners should be released gracefully.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions.RetryAfterRelease">
+            <summary>
+            Gets or sets a value indicating whether the open should be retried after a successful release.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions.RetryDelay">
+            <summary>
+            Gets or sets the delay before retrying after a successful release.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions.OwnerResolver">
+            <summary>
+            Gets or sets an explicit owner resolver. When omitted, the resolver registry is used.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions.OwnerReleaser">
+            <summary>
+            Gets or sets an explicit owner releaser. When omitted, <see cref="P:AdbSharp.Transport.Usb.UsbDeviceLockOwnerReleaser.Default" /> is used.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockConflictOptions.ReleaseOptions">
+            <summary>
+            Gets or sets release options used for automatic graceful ADB release.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockOwner">
+            <summary>
+            Describes a host process that may hold a USB device interface lock.
+            </summary>
+            <param name="ProcessId">The host process identifier.</param>
+            <param name="ProcessName">The process name when available.</param>
+            <param name="ExecutablePath">The executable path when available.</param>
+            <param name="Kind">The detected owner kind.</param>
+            <param name="Confidence">The owner confidence level.</param>
+            <param name="Evidence">Short platform-specific evidence for the match.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwner.#ctor(System.Int32,System.String,System.String,AdbSharp.Transport.Usb.UsbDeviceLockOwnerKind,AdbSharp.Transport.Usb.UsbDeviceLockOwnerConfidence,System.String)">
+            <summary>
+            Describes a host process that may hold a USB device interface lock.
+            </summary>
+            <param name="ProcessId">The host process identifier.</param>
+            <param name="ProcessName">The process name when available.</param>
+            <param name="ExecutablePath">The executable path when available.</param>
+            <param name="Kind">The detected owner kind.</param>
+            <param name="Confidence">The owner confidence level.</param>
+            <param name="Evidence">Short platform-specific evidence for the match.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwner.ProcessId">
+            <summary>The host process identifier.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwner.ProcessName">
+            <summary>The process name when available.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwner.ExecutablePath">
+            <summary>The executable path when available.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwner.Kind">
+            <summary>The detected owner kind.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwner.Confidence">
+            <summary>The owner confidence level.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwner.Evidence">
+            <summary>Short platform-specific evidence for the match.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwner.SupportsGracefulAdbRelease">
+            <summary>
+            Gets a value indicating whether this owner can be released through the ADB server protocol.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockOwnerConfidence">
+            <summary>
+            Describes how strongly a detected process is believed to own a USB device lock.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerConfidence.Exact">
+            <summary>
+            The process was matched to the exact platform device path or device node.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerConfidence.High">
+            <summary>
+            The process is highly likely to own the lock, but the platform could not prove an exact match.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerConfidence.Medium">
+            <summary>
+            The process is plausibly related to the lock.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerConfidence.Low">
+            <summary>
+            The process is weakly related to the lock.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockOwnerKind">
+            <summary>
+            Classifies a detected USB lock owner.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerKind.Unknown">
+            <summary>
+            The process kind is unknown.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerKind.AdbServer">
+            <summary>
+            The process appears to be an ADB server.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerKind.Fastboot">
+            <summary>
+            The process appears to be a Fastboot process.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerKind.AndroidStudio">
+            <summary>
+            The process appears to be Android Studio or a related helper process.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerKind.Scrcpy">
+            <summary>
+            The process appears to be scrcpy.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockOwnerReleaser">
+            <summary>
+            Default USB lock owner releaser.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwnerReleaser.Default">
+            <summary>
+            Gets the default lock owner releaser.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwnerReleaser.ReleaseAsync(AdbSharp.Transport.Usb.UsbDeviceLockOwner,AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution">
+            <summary>
+            Result of resolving host processes that may hold a USB device interface lock.
+            </summary>
+            <param name="Descriptor">The descriptor that was inspected.</param>
+            <param name="Status">The resolution status.</param>
+            <param name="Owners">Resolved owner processes.</param>
+            <param name="DevicePath">The platform device path or node that was inspected.</param>
+            <param name="Message">A diagnostic message.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution.#ctor(AdbSharp.Common.Devices.UsbDeviceDescriptor,AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus,System.Collections.Generic.IReadOnlyList{AdbSharp.Transport.Usb.UsbDeviceLockOwner},System.String,System.String)">
+            <summary>
+            Result of resolving host processes that may hold a USB device interface lock.
+            </summary>
+            <param name="Descriptor">The descriptor that was inspected.</param>
+            <param name="Status">The resolution status.</param>
+            <param name="Owners">Resolved owner processes.</param>
+            <param name="DevicePath">The platform device path or node that was inspected.</param>
+            <param name="Message">A diagnostic message.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution.Descriptor">
+            <summary>The descriptor that was inspected.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution.Status">
+            <summary>The resolution status.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution.Owners">
+            <summary>Resolved owner processes.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution.DevicePath">
+            <summary>The platform device path or node that was inspected.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution.Message">
+            <summary>A diagnostic message.</summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolution.Empty(AdbSharp.Common.Devices.UsbDeviceDescriptor,AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus,System.String,System.String)">
+            <summary>
+            Creates a resolution with no owner results.
+            </summary>
+            <param name="descriptor">The descriptor that was inspected.</param>
+            <param name="status">The resolution status.</param>
+            <param name="devicePath">The platform device path or node that was inspected.</param>
+            <param name="message">A diagnostic message.</param>
+            <returns>The resolution.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus">
+            <summary>
+            Describes the outcome of resolving USB lock owners.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus.Resolved">
+            <summary>
+            One or more owner processes were resolved.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus.NoOwnerFound">
+            <summary>
+            Resolution completed and no owner process was found.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus.Unsupported">
+            <summary>
+            The current host platform or descriptor is not supported by the resolver.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus.AccessDenied">
+            <summary>
+            The host denied access to required process or device metadata.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus.Partial">
+            <summary>
+            Resolution completed with partial results because some metadata was unavailable.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolutionStatus.Failed">
+            <summary>
+            Resolution failed unexpectedly.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolverRegistry">
+            <summary>
+            Process-wide registry for USB device lock owner resolvers.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolverRegistry.RegisterResolver(AdbSharp.Transport.Usb.IUsbDeviceLockOwnerResolver)">
+            <summary>
+            Registers a USB device lock owner resolver.
+            </summary>
+            <param name="resolver">The resolver to register.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolverRegistry.Clear">
+            <summary>
+            Clears registered resolvers. Intended for tests and custom hosts.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolverRegistry.FindResolver(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <summary>
+            Finds a registered resolver for the descriptor.
+            </summary>
+            <param name="descriptor">The descriptor to inspect.</param>
+            <returns>The matching resolver, or <see langword="null" /> when no resolver matches.</returns>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockOwnerResolverRegistry.ResolveAsync(AdbSharp.Common.Devices.UsbDeviceDescriptor,AdbSharp.Transport.Usb.UsbTransportException,System.Threading.CancellationToken)">
+            <summary>
+            Resolves lock owners using the registered resolver for the descriptor.
+            </summary>
+            <param name="descriptor">The descriptor to inspect.</param>
+            <param name="openFailure">The open failure that triggered resolution, when available.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>The owner resolution result.</returns>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockReleaseKind">
+            <summary>
+            Describes the release mechanism used for a USB lock owner.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockReleaseKind.GracefulAdbServerKill">
+            <summary>
+            The lock was released by sending a host kill request to the local ADB server.
+            </summary>
+        </member>
+        <member name="F:AdbSharp.Transport.Usb.UsbDeviceLockReleaseKind.ProcessTerminate">
+            <summary>
+            The lock was released by terminating the owner process.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions">
+            <summary>
+            Options for releasing a detected USB device lock owner.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions.AllowGracefulAdbServerKill">
+            <summary>
+            Gets or sets a value indicating whether ADB server owners should be released by the local ADB server protocol.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions.AllowProcessTermination">
+            <summary>
+            Gets or sets a value indicating whether the releaser may terminate the owner process.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions.AdbServerHost">
+            <summary>
+            Gets or sets the local ADB server host used for graceful ADB release.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions.AdbServerPort">
+            <summary>
+            Gets or sets the local ADB server port used for graceful ADB release.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseOptions.AdbServerTimeout">
+            <summary>
+            Gets or sets the timeout used when contacting the local ADB server.
+            </summary>
+        </member>
+        <member name="T:AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult">
+            <summary>
+            Result of attempting to release a USB lock owner.
+            </summary>
+            <param name="Owner">The owner that was targeted.</param>
+            <param name="Kind">The release mechanism that was attempted.</param>
+            <param name="Succeeded">Whether the release succeeded.</param>
+            <param name="Message">A diagnostic message.</param>
+            <param name="Exception">The underlying failure, when available.</param>
+        </member>
+        <member name="M:AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult.#ctor(AdbSharp.Transport.Usb.UsbDeviceLockOwner,AdbSharp.Transport.Usb.UsbDeviceLockReleaseKind,System.Boolean,System.String,System.Exception)">
+            <summary>
+            Result of attempting to release a USB lock owner.
+            </summary>
+            <param name="Owner">The owner that was targeted.</param>
+            <param name="Kind">The release mechanism that was attempted.</param>
+            <param name="Succeeded">Whether the release succeeded.</param>
+            <param name="Message">A diagnostic message.</param>
+            <param name="Exception">The underlying failure, when available.</param>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult.Owner">
+            <summary>The owner that was targeted.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult.Kind">
+            <summary>The release mechanism that was attempted.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult.Succeeded">
+            <summary>Whether the release succeeded.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult.Message">
+            <summary>A diagnostic message.</summary>
+        </member>
+        <member name="P:AdbSharp.Transport.Usb.UsbDeviceLockReleaseResult.Exception">
+            <summary>The underlying failure, when available.</summary>
         </member>
         <member name="T:AdbSharp.Transport.Usb.UsbDiscoveryIssue">
             <summary>

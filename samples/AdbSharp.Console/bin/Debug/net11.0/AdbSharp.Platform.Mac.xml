@@ -4,6 +4,25 @@
         <name>AdbSharp.Platform.Mac</name>
     </assembly>
     <members>
+        <member name="T:AdbSharp.Platform.Mac.Usb.MacUsbDeviceLockOwnerResolver">
+            <summary>
+            Resolves likely macOS processes that may hold Android USB interfaces.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Platform.Mac.Usb.MacUsbDeviceLockOwnerResolver.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Platform.Mac.Usb.MacUsbDeviceLockOwnerResolver" /> class.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Platform.Mac.Usb.MacUsbDeviceLockOwnerResolver.PlatformName">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Mac.Usb.MacUsbDeviceLockOwnerResolver.CanResolve(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Mac.Usb.MacUsbDeviceLockOwnerResolver.ResolveAsync(AdbSharp.Common.Devices.UsbDeviceDescriptor,AdbSharp.Transport.Usb.UsbTransportException,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:AdbSharp.Platform.Mac.Usb.MacUsbTransportFactory">
             <summary>
             macOS USB provider backed by IOKit discovery.

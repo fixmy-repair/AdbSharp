@@ -52,6 +52,7 @@ USB diagnostics:
 
 ```sh
 dotnet run --project samples/AdbSharp.Console -- usb-diagnostics
+dotnet run --project samples/AdbSharp.Console -- usb-lock-owners
 dotnet run --project samples/AdbSharp.Console -- usb-open-diagnostics
 ```
 
@@ -69,6 +70,8 @@ dotnet run --project samples/AdbSharp.Console -- usb-open-diagnostics
   Missing rules usually surface as `PermissionDenied`.
 - Only one process can own a USB interface at a time. Close other ADB clients,
   IDE device managers, or platform tools before validation.
+- If a lock-like open failure occurs, run `usb-lock-owners` to capture process
+  name, PID, executable path, confidence, and resolver status.
 - Some devices disconnect and reconnect after USB reset or fastboot mode
   transitions. Tests rediscover the device after abort/reset paths instead of
   reusing stale handles.
@@ -81,4 +84,6 @@ Record:
 - Device vendor, model, Android version, and build fingerprint when available.
 - Device mode: ADB, recovery, bootloader fastboot, or fastbootd.
 - Transport backend from `usb-open-diagnostics`.
+- Lock owner resolver status and owner rows from `usb-lock-owners` when a device
+  reports `Busy`, `ExclusiveAccess`, or `PermissionDenied`.
 - Any `UsbTransportException.Error` value and native diagnostic fields.

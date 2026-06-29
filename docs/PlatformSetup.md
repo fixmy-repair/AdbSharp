@@ -8,6 +8,7 @@ AdbSharp talks directly to Android USB interfaces. It does not invoke Android SD
 - Grant the current user access to Android vendor-specific USB interfaces with udev rules.
 - Reload udev rules and reconnect the device after changing permissions.
 - If another process has claimed the interface, AdbSharp may report `UsbTransportError.Busy` or `UsbTransportError.ExclusiveAccess`.
+- Lock owner resolution maps the libusb bus/device id to `/dev/bus/usb/<bus>/<device>` and scans `/proc/<pid>/fd`.
 
 Example udev rule shape:
 
@@ -22,6 +23,7 @@ Use the real vendor id for non-Google devices.
 - Install a WinUSB-compatible Android driver for the device interface.
 - The interface must expose the Android device-interface GUID used by Google's USB driver.
 - Driver or sharing failures are reported through `UsbTransportException.Error`, commonly `PermissionDenied`, `DeviceNotFound`, `DeviceDisconnected`, `Timeout`, `Busy`, or `ExclusiveAccess`.
+- Lock owner resolution uses Windows handle inspection for the exact WinUSB device interface path when the current user has enough process metadata access.
 
 ## macOS
 
@@ -29,6 +31,21 @@ Use the real vendor id for non-Google devices.
 - Only one process can hold exclusive access to a USB interface at a time.
 - Disconnect tools that may already own the interface before opening the device with AdbSharp.
 - Permission, exclusive-access, timeout, and detach failures are reported through `UsbTransportException.Error`.
+- Lock owner resolution is best effort on macOS and reports likely Android tooling processes such as ADB, Fastboot, Android Studio, and scrcpy.
+
+## USB Lock Owner Diagnostics
+
+When a device open fails because the interface is busy or sharing is denied, run:
+
+```sh
+dotnet run --project samples/AdbSharp.Console -- usb-lock-owners
+dotnet run --project samples/AdbSharp.Console -- usb-open-diagnostics
+```
+
+`usb-lock-owners` reports possible owners without opening the interface.
+`usb-open-diagnostics` includes owner details after lock-like open failures.
+Applications can opt into the same behavior through
+`UsbDeviceLockConflictOptions` on ADB and Fastboot client options.
 
 ## Hardware Tests
 

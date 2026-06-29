@@ -7,7 +7,7 @@ namespace AdbSharp.Transport.Usb;
 /// </summary>
 public static class UsbTransportRegistry
 {
-    private static readonly object Gate = new();
+    private static readonly Lock Gate = new();
     private static readonly List<IUsbDeviceEnumerator> Enumerators = [];
     private static readonly List<IUsbTransportFactory> Factories = [];
 
@@ -21,7 +21,7 @@ public static class UsbTransportRegistry
 
         lock (Gate)
         {
-            if (!Enumerators.Contains(enumerator))
+            if (!ContainsReference(Enumerators, enumerator))
             {
                 Enumerators.Add(enumerator);
             }
@@ -38,7 +38,7 @@ public static class UsbTransportRegistry
 
         lock (Gate)
         {
-            if (!Factories.Contains(factory))
+            if (!ContainsReference(Factories, factory))
             {
                 Factories.Add(factory);
             }
@@ -129,14 +129,17 @@ public static class UsbTransportRegistry
     {
         ArgumentNullException.ThrowIfNull(descriptor);
 
+        IUsbTransportFactory[] snapshot;
         lock (Gate)
         {
-            foreach (var factory in Factories)
+            snapshot = [.. Factories];
+        }
+
+        foreach (var factory in snapshot)
+        {
+            if (factory.CanOpen(descriptor))
             {
-                if (factory.CanOpen(descriptor))
-                {
-                    return factory;
-                }
+                return factory;
             }
         }
 
@@ -146,5 +149,19 @@ public static class UsbTransportRegistry
     private static string GetEnumeratorName(IUsbDeviceEnumerator enumerator)
     {
         return enumerator.GetType().FullName ?? enumerator.GetType().Name;
+    }
+
+    private static bool ContainsReference<T>(List<T> values, T value)
+        where T : class
+    {
+        foreach (var candidate in values)
+        {
+            if (ReferenceEquals(candidate, value))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

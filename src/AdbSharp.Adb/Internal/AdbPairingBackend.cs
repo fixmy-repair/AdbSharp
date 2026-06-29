@@ -66,6 +66,7 @@ internal sealed class AdbPairingBackend : IAdbPairingBackend
     {
         try
         {
+            // BouncyCastle exposes this TLS handshake as synchronous; isolate it from the caller's async path.
             await Task.Run(() => action(state), cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
@@ -190,6 +191,7 @@ internal sealed class AdbPairingBackend : IAdbPairingBackend
             while (!buffer.IsEmpty)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                // BouncyCastle exposes TLS application reads as synchronous; keep the public pairing API asynchronous.
                 var read = await Task.Run(() => protocol.ReadApplicationData(buffer.Span), cancellationToken).ConfigureAwait(false);
                 if (read <= 0)
                 {
@@ -203,6 +205,7 @@ internal sealed class AdbPairingBackend : IAdbPairingBackend
         public async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            // BouncyCastle exposes TLS application writes as synchronous; keep the public pairing API asynchronous.
             await Task.Run(() => protocol.WriteApplicationData(buffer.Span), cancellationToken).ConfigureAwait(false);
         }
 

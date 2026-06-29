@@ -11,6 +11,7 @@ namespace AdbSharp.Discovery;
 public static class DefaultTransportProvider
 {
     private static int registered;
+    private static int registeredLockOwnerResolvers;
 
     /// <summary>
     /// Registers built-in Windows, Linux, and macOS transport providers once.
@@ -25,6 +26,22 @@ public static class DefaultTransportProvider
         Register(new WindowsUsbTransportFactory());
         Register(new LinuxUsbTransportFactory());
         Register(new MacUsbTransportFactory());
+        RegisterBuiltInLockOwnerResolvers();
+    }
+
+    /// <summary>
+    /// Registers built-in Windows, Linux, and macOS USB lock owner resolvers once.
+    /// </summary>
+    public static void RegisterBuiltInLockOwnerResolvers()
+    {
+        if (Interlocked.Exchange(ref registeredLockOwnerResolvers, 1) == 1)
+        {
+            return;
+        }
+
+        UsbDeviceLockOwnerResolverRegistry.RegisterResolver(new WindowsUsbDeviceLockOwnerResolver());
+        UsbDeviceLockOwnerResolverRegistry.RegisterResolver(new LinuxUsbDeviceLockOwnerResolver());
+        UsbDeviceLockOwnerResolverRegistry.RegisterResolver(new MacUsbDeviceLockOwnerResolver());
     }
 
     private static void Register(IUsbDeviceEnumerator provider)

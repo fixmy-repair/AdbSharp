@@ -55,7 +55,11 @@ public sealed class AdbClient : IAsyncDisposable
         for (var attempt = 1; attempt <= MaxUsbConnectAttempts; attempt++)
         {
             var factory = options.TransportFactory ?? UsbTransportRegistry.FindFactory(device.Usb);
-            var transport = await factory.OpenAsync(device.Usb, cancellationToken).ConfigureAwait(false);
+            var transport = await UsbDeviceLockConflictHandler.OpenAsync(
+                factory,
+                device.Usb,
+                options.LockConflictHandling,
+                cancellationToken).ConfigureAwait(false);
             try
             {
                 UsbTransportValidator.ValidateOpenedTransport(transport);

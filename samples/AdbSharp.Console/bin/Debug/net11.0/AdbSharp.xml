@@ -26,5 +26,10 @@
             Registers built-in Windows, Linux, and macOS transport providers once.
             </summary>
         </member>
+        <member name="M:AdbSharp.Discovery.DefaultTransportProvider.RegisterBuiltInLockOwnerResolvers">
+            <summary>
+            Registers built-in Windows, Linux, and macOS USB lock owner resolvers once.
+            </summary>
+        </member>
     </members>
 </doc>

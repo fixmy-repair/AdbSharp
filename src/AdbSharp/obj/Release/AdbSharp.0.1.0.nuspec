@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/fixmy/AdbSharp</projectUrl>
     <description>Native managed .NET implementation of Android Platform Tools protocols.</description>
     <tags>android adb fastboot fastbootd usb</tags>
-    <repository type="git" url="https://github.com/fixmy/AdbSharp" commit="71f0446815169bf89e58ac19d638a8f4826e1cd4" />
+    <repository type="git" url="https://github.com/fixmy/AdbSharp" commit="bab5a5a7840dfcdbef200d2e9b1c216272ba8e4a" />
     <dependencies>
       <group targetFramework="net11.0">
         <dependency id="AdbSharp.Adb" version="0.1.0" exclude="Build,Analyzers" />
@@ -33,6 +33,7 @@
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/ADB.md" target="docs/ADB.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Architecture.md" target="docs/Architecture.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Authentication.md" target="docs/Authentication.md" />
+    <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/DeviceLockOwnerResolver.md" target="docs/DeviceLockOwnerResolver.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Examples.md" target="docs/Examples.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Fastboot.md" target="docs/Fastboot.md" />
     <file src="/Users/fixmy/Dev/apps/AdbSharp/docs/Fastbootd.md" target="docs/Fastbootd.md" />

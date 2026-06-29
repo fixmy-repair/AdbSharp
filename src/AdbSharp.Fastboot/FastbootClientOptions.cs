@@ -13,6 +13,11 @@ public sealed class FastbootClientOptions
     public IUsbTransportFactory? TransportFactory { get; set; }
 
     /// <summary>
+    /// Gets or sets optional USB lock conflict handling for USB open failures.
+    /// </summary>
+    public UsbDeviceLockConflictOptions? LockConflictHandling { get; set; }
+
+    /// <summary>
     /// Gets or sets the transfer chunk size used for data phases.
     /// </summary>
     public int ChunkSize { get; set; } = 1024 * 1024;

@@ -67,7 +67,7 @@ internal sealed class AdbConnection(IAdbTransport transport, AdbClientOptions op
                         DeviceVersion = packet.Header.Arg0;
                         MaxPayload = checked((int)Math.Min(packet.Header.Arg1, (uint)Options.MaxPayload));
                         ParseFeatures(packet.Payload.Span);
-                        readerTask = Task.Run(() => ReaderLoopAsync(disposeCts.Token), CancellationToken.None);
+                        readerTask = ReaderLoopAsync(disposeCts.Token);
                         return;
 
                     case AdbCommand.StartTls:
@@ -357,7 +357,7 @@ internal sealed class AdbConnection(IAdbTransport transport, AdbClientOptions op
     private Task<AdbPacket> StartReadPacketTask(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return Task.Run(async () => await ReadPacketAsync(cancellationToken).ConfigureAwait(false), CancellationToken.None);
+        return ReadPacketAsync(cancellationToken).AsTask();
     }
 
     private static bool IsProtocolOperationRetryRequested(UsbTransportException exception)

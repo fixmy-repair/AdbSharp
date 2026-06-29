@@ -43,6 +43,7 @@ Production code remains split by responsibility:
 - Zero-length packet writes for packet-aligned USB transfers.
 - Packet-size-aware ADB USB read buffering.
 - Injectable native adapters for deterministic WinUSB, libusb, IOUSBLib, and IOUSBHost tests.
+- Cross-platform USB lock owner resolution for busy or sharing-denied Android interfaces.
 
 ### ADB
 
@@ -233,6 +234,7 @@ Console.WriteLine(result.UsedFastbootd ? "fastbootd" : "fastboot");
 
 ```sh
 dotnet run --project samples/AdbSharp.Console -- usb-diagnostics
+dotnet run --project samples/AdbSharp.Console -- usb-lock-owners
 dotnet run --project samples/AdbSharp.Console -- usb-open-diagnostics
 dotnet run --project samples/AdbSharp.Console -- shell getprop ro.product.model
 dotnet run --project samples/AdbSharp.Console -- mdns
@@ -265,6 +267,21 @@ Opened transports that implement `IUsbTransportDiagnostics` expose backend,
 transport id, endpoint metadata, native state, and last-error fields without
 private reflection.
 
+When a USB interface is busy or sharing is denied, applications can opt into
+lock owner resolution without changing the low-level transport factory contract:
+
+```csharp
+var resolution = await UsbDeviceLockOwnerResolverRegistry.ResolveAsync(device.Usb);
+foreach (var owner in resolution.Owners)
+{
+    Console.WriteLine($"{owner.ProcessId}\t{owner.ProcessName}\t{owner.Confidence}");
+}
+```
+
+High-level ADB/Fastboot clients keep the default no-policy open behavior unless
+`LockConflictHandling` is set. Graceful ADB server release uses the local ADB
+server protocol directly and never launches external tools.
+
 ## Documentation
 
 - [Architecture](docs/Architecture.md)
@@ -276,6 +293,7 @@ private reflection.
 - [Platform Setup](docs/PlatformSetup.md)
 - [Hardware Validation](docs/HardwareValidation.md)
 - [USB Source Parity](docs/USBSourceParity.md)
+- [Device Lock Owner Resolver](docs/DeviceLockOwnerResolver.md)
 - [NOTICE](docs/NOTICE.md)
 
 ## Non-goals And Compliance

@@ -4,6 +4,25 @@
         <name>AdbSharp.Platform.Linux</name>
     </assembly>
     <members>
+        <member name="T:AdbSharp.Platform.Linux.Usb.LinuxUsbDeviceLockOwnerResolver">
+            <summary>
+            Resolves Linux processes that hold Android USB device nodes.
+            </summary>
+        </member>
+        <member name="M:AdbSharp.Platform.Linux.Usb.LinuxUsbDeviceLockOwnerResolver.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AdbSharp.Platform.Linux.Usb.LinuxUsbDeviceLockOwnerResolver" /> class.
+            </summary>
+        </member>
+        <member name="P:AdbSharp.Platform.Linux.Usb.LinuxUsbDeviceLockOwnerResolver.PlatformName">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Linux.Usb.LinuxUsbDeviceLockOwnerResolver.CanResolve(AdbSharp.Common.Devices.UsbDeviceDescriptor)">
+            <inheritdoc />
+        </member>
+        <member name="M:AdbSharp.Platform.Linux.Usb.LinuxUsbDeviceLockOwnerResolver.ResolveAsync(AdbSharp.Common.Devices.UsbDeviceDescriptor,AdbSharp.Transport.Usb.UsbTransportException,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:AdbSharp.Platform.Linux.Usb.LinuxUsbTransportFactory">
             <summary>
             Linux USB provider backed by libusb.

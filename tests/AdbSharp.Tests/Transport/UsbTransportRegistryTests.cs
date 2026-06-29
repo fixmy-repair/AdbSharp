@@ -5,7 +5,7 @@ namespace AdbSharp.Tests.Transport;
 
 public sealed class UsbTransportRegistryTests
 {
-    private static readonly object RegistryGate = new();
+    private static readonly Lock RegistryGate = new();
 
     [Fact]
     public async Task FindWithDiagnosticsAsync_returns_devices_and_failed_enumerator_issues()

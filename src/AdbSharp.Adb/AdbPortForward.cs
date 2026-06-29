@@ -22,7 +22,7 @@ public sealed class AdbPortForward : IAsyncDisposable
         this.listener = listener;
         Remote = remote;
         LocalEndPoint = (IPEndPoint)listener.LocalEndpoint;
-        acceptTask = Task.Run(() => AcceptLoopAsync(cancellation.Token), CancellationToken.None);
+        acceptTask = AcceptLoopAsync(cancellation.Token);
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public sealed class AdbPortForward : IAsyncDisposable
         while (!cancellationToken.IsCancellationRequested)
         {
             var socket = await listener.AcceptTcpClientAsync(cancellationToken).ConfigureAwait(false);
-            connections.Add(Task.Run(() => HandleConnectionAsync(socket, cancellationToken), CancellationToken.None));
+            connections.Add(HandleConnectionAsync(socket, cancellationToken));
         }
     }
 

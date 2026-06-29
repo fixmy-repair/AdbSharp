@@ -5,7 +5,7 @@ namespace AdbSharp.Transport.Usb;
 /// <summary>
 /// Represents a USB transport failure.
 /// </summary>
-public sealed class UsbTransportException : AdbSharpException
+public class UsbTransportException : AdbSharpException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UsbTransportException"/> class.

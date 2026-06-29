@@ -279,6 +279,11 @@
             Gets or sets the USB transport factory. When omitted, the global transport registry is used.
             </summary>
         </member>
+        <member name="P:AdbSharp.Fastboot.FastbootClientOptions.LockConflictHandling">
+            <summary>
+            Gets or sets optional USB lock conflict handling for USB open failures.
+            </summary>
+        </member>
         <member name="P:AdbSharp.Fastboot.FastbootClientOptions.ChunkSize">
             <summary>
             Gets or sets the transfer chunk size used for data phases.

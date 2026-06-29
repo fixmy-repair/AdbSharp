@@ -38,6 +38,18 @@ if (args.Length == 1 && string.Equals(args[0], "usb-diagnostics", StringComparis
     return;
 }
 
+if (args.Length == 1 && string.Equals(args[0], "usb-lock-owners", StringComparison.OrdinalIgnoreCase))
+{
+    DefaultTransportProvider.RegisterBuiltInTransports();
+    foreach (var device in await UsbTransportRegistry.FindAsync())
+    {
+        Console.WriteLine($"device\t{device.TransportId}\t{device.VendorId:x4}:{device.ProductId:x4}\tinterface={device.InterfaceNumber}");
+        await PrintUsbLockOwnersAsync(device);
+    }
+
+    return;
+}
+
 if (args.Length == 1 && string.Equals(args[0], "usb-open-diagnostics", StringComparison.OrdinalIgnoreCase))
 {
     DefaultTransportProvider.RegisterBuiltInTransports();
@@ -66,6 +78,14 @@ if (args.Length == 1 && string.Equals(args[0], "usb-open-diagnostics", StringCom
             else
             {
                 Console.WriteLine("diagnostics-unavailable");
+            }
+        }
+        catch (UsbTransportException ex)
+        {
+            Console.WriteLine($"open-error\t{ex.Error}\t{ex.Message}");
+            if (UsbDeviceLockConflictHandler.IsLockLikeFailure(ex))
+            {
+                await PrintUsbLockOwnersAsync(device, ex);
             }
         }
         catch (Exception ex)
@@ -389,6 +409,17 @@ static (string Host, int Port) ParseTcpEndpoint(string endpoint)
     }
 
     return (endpoint, defaultPort);
+}
+
+static async ValueTask PrintUsbLockOwnersAsync(UsbDeviceDescriptor device, UsbTransportException? openFailure = null)
+{
+    var resolution = await UsbDeviceLockOwnerResolverRegistry.ResolveAsync(device, openFailure);
+    Console.WriteLine($"lock-resolution\t{resolution.Status}\t{resolution.DevicePath ?? "-"}\t{resolution.Message ?? "-"}");
+    foreach (var owner in resolution.Owners)
+    {
+        Console.WriteLine(
+            $"lock-owner\tpid={owner.ProcessId}\tname={owner.ProcessName ?? "-"}\tkind={owner.Kind}\tconfidence={owner.Confidence}\tpath={owner.ExecutablePath ?? "-"}\tevidence={owner.Evidence ?? "-"}");
+    }
 }
 
 static async ValueTask<AdbRsaAuthenticator> CreateDefaultAdbAuthenticatorAsync(CancellationToken cancellationToken = default)

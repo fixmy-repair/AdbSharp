@@ -16,6 +16,11 @@ public sealed class AdbClientOptions
     public IUsbTransportFactory? TransportFactory { get; set; }
 
     /// <summary>
+    /// Gets or sets optional USB lock conflict handling for USB open failures.
+    /// </summary>
+    public UsbDeviceLockConflictOptions? LockConflictHandling { get; set; }
+
+    /// <summary>
     /// Gets or sets the authenticator used for device authorization.
     /// </summary>
     public IAdbAuthenticator? Authenticator { get; set; }

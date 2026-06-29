@@ -5,18 +5,21 @@ namespace AdbSharp.Platform.Mac.Usb.Native;
 
 internal static partial class MacObjC
 {
+    private const int UsbHostUnloaded = 0;
+    private const int UsbHostLoading = 1;
+    private const int UsbHostLoaded = 2;
     private const int RtldNow = 0x2;
     private const int BlockHasSignature = 1 << 30;
     private const nuint UsbHostObjectInitOptionsNone = 0;
     private const nuint UsbHostAbortOptionSynchronous = 1;
     private const string CompletionBlockSignature = "v24@?0I8Q16";
 
-    private static readonly Lock LoadGate = new();
     private static readonly IntPtr LibSystem = NativeLibrary.Load("/usr/lib/libSystem.B.dylib");
     private static readonly IntPtr ConcreteStackBlock = NativeLibrary.GetExport(LibSystem, "_NSConcreteStackBlock");
     private static readonly IntPtr CompletionBlockDescriptor = CreateCompletionBlockDescriptor();
     private static readonly IntPtr UsbHostQueue = DispatchQueueCreate("com.adbsharp.usbhost", IntPtr.Zero);
-    private static bool usbHostLoaded;
+    private static readonly ManualResetEventSlim UsbHostLoadCompleted = new(initialState: true);
+    private static int usbHostLoadState;
 
     private static readonly IntPtr AllocSelector = RegisterSelector("alloc");
     private static readonly IntPtr ReleaseSelector = RegisterSelector("release");
@@ -40,25 +43,37 @@ internal static partial class MacObjC
 
     public static void EnsureUsbHostLoaded()
     {
-        if (usbHostLoaded)
+        while (true)
         {
-            return;
-        }
-
-        lock (LoadGate)
-        {
-            if (usbHostLoaded)
+            var state = Volatile.Read(ref usbHostLoadState);
+            if (state == UsbHostLoaded)
             {
                 return;
             }
 
-            var handle = Dlopen("/System/Library/Frameworks/IOUSBHost.framework/IOUSBHost", RtldNow);
-            if (handle == IntPtr.Zero)
+            if (state == UsbHostUnloaded
+                && Interlocked.CompareExchange(ref usbHostLoadState, UsbHostLoading, UsbHostUnloaded) == UsbHostUnloaded)
             {
-                throw new UsbTransportException(UsbTransportError.PlatformDependencyMissing, "Failed to load IOUSBHost.framework.");
+                UsbHostLoadCompleted.Reset();
+                try
+                {
+                    var handle = Dlopen("/System/Library/Frameworks/IOUSBHost.framework/IOUSBHost", RtldNow);
+                    if (handle == IntPtr.Zero)
+                    {
+                        Volatile.Write(ref usbHostLoadState, UsbHostUnloaded);
+                        throw new UsbTransportException(UsbTransportError.PlatformDependencyMissing, "Failed to load IOUSBHost.framework.");
+                    }
+
+                    Volatile.Write(ref usbHostLoadState, UsbHostLoaded);
+                    return;
+                }
+                finally
+                {
+                    UsbHostLoadCompleted.Set();
+                }
             }
 
-            usbHostLoaded = true;
+            UsbHostLoadCompleted.Wait();
         }
     }
 

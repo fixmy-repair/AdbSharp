@@ -289,6 +289,11 @@
             Gets or sets the USB transport factory used by <see cref="M:AdbSharp.Adb.AdbClient.ConnectAsync(AdbSharp.Common.Devices.AndroidDevice,AdbSharp.Adb.AdbClientOptions,System.Threading.CancellationToken)" />. When omitted, the global transport registry is used.
             </summary>
         </member>
+        <member name="P:AdbSharp.Adb.AdbClientOptions.LockConflictHandling">
+            <summary>
+            Gets or sets optional USB lock conflict handling for USB open failures.
+            </summary>
+        </member>
         <member name="P:AdbSharp.Adb.AdbClientOptions.Authenticator">
             <summary>
             Gets or sets the authenticator used for device authorization.
